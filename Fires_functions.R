@@ -10,6 +10,7 @@
 #' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
 #' fline - the fireline length in m
 #' @param Structure A dataframe with the fields:
+#' record - a unique, consecutively numbered identifier per site
 #' site - a unique identifier per site
 #' NS, El, Mid & Can - the mean separation between plants (m) per stratum
 #' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
@@ -19,9 +20,6 @@
 
 siteBuilder <- function(site, Structure, a)
 {
-  # Collect subsets for record
-  st <- Structure[Structure$record==a,]
-  si <- site[site$record==a,]
 
   # CREATE site.meta
   paramSite <- c('overlapping','overlapping','overlapping','overlapping','overlapping', 'fuelLoad',
@@ -36,20 +34,20 @@ siteBuilder <- function(site, Structure, a)
   site.meta$param <- paramSite
   site.meta$units <- unitsSite
   # ENTER VARIABLES
-  site.meta$value[1] <- ifelse(Structure$ns_e[1]=='t',"near surface, elevated, overlapped",
-                               ifelse(Structure$ns_e[1]=='f',"near surface, elevated, not overlapped",
+  site.meta$value[1] <- ifelse(Structure$ns_e[a]=='t',"near surface, elevated, overlapped",
+                               ifelse(Structure$ns_e[a]=='f',"near surface, elevated, not overlapped",
                                       "near surface, elevated, automatic"))
-  site.meta$value[2] <- ifelse(Structure$ns_e[2]=='t',"near surface, midstorey, overlapped",
-                               ifelse(Structure$ns_e[2]=='f',"near surface, midstorey, not overlapped",
+  site.meta$value[2] <- ifelse(Structure$ns_m[a]=='t',"near surface, midstorey, overlapped",
+                               ifelse(Structure$ns_m[a]=='f',"near surface, midstorey, not overlapped",
                                       "near surface, midstorey, automatic"))
-  site.meta$value[3] <- ifelse(Structure$ns_e[3]=='t',"elevated, midstorey, overlapped",
-                               ifelse(Structure$ns_e[3]=='f',"elevated, midstorey, not overlapped",
+  site.meta$value[3] <- ifelse(Structure$e_m[a]=='t',"elevated, midstorey, overlapped",
+                               ifelse(Structure$e_m[a]=='f',"elevated, midstorey, not overlapped",
                                       "elevated, midstorey, automatic"))
-  site.meta$value[4] <- ifelse(Structure$ns_e[4]=='t',"elevated, canopy, overlapped",
-                               ifelse(Structure$ns_e[4]=='f',"elevated, canopy, not overlapped",
+  site.meta$value[4] <- ifelse(Structure$e_c[a]=='t',"elevated, canopy, overlapped",
+                               ifelse(Structure$e_c[a]=='f',"elevated, canopy, not overlapped",
                                       "elevated, canopy, automatic"))
-  site.meta$value[5] <- ifelse(Structure$ns_e[5]=='t',"midstorey, canopy, overlapped",
-                               ifelse(Structure$ns_e[5]=='f',"midstorey, canopy, not overlapped",
+  site.meta$value[5] <- ifelse(Structure$m_c[a]=='t',"midstorey, canopy, overlapped",
+                               ifelse(Structure$m_c[a]=='f',"midstorey, canopy, not overlapped",
                                       "midstorey, canopy, automatic"))
   site.meta$value[6] <- site$oHorizon[a]
   site.meta$value[7] <- 0.005
@@ -138,7 +136,8 @@ strataBuilder <- function(Structure, Flora, a)
 #' Builds the dataframe species.values from input tables
 #'
 #' @param Flora A dataframe with the fields:
-#' species - the name of the species, which will call trait data from 'traits'
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'DefaultSpeciesParams'
 #' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
 #' stratum - numeric value from 1 to 4, counting from lowest stratum
 #' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
@@ -205,7 +204,8 @@ speciesBuilder <- function(Flora, site, a)
 #' Builds the dataframe species.units from input tables
 #'
 #' @param Flora A dataframe with the fields:
-#' species - the name of the species, which will call trait data from 'traits'
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'DefaultSpeciesParams'
 #' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
 #' stratum - numeric value from 1 to 4, counting from lowest stratum
 #' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
@@ -245,6 +245,7 @@ unitBuilder <- function(Flora, a)
 #' Constructs parameter files from imported tables
 
 #' @param site A dataframe with the six fields:
+#' record - a unique, consecutively numbered identifier per site
 #' site - a unique identifier per site
 #' slope - slope in degrees
 #' wind - velocity in km/h
@@ -253,22 +254,25 @@ unitBuilder <- function(Flora, a)
 #' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
 #' fline - the fireline length in m
 #' @param Structure A dataframe with the fields:
+#' record - a unique, consecutively numbered identifier per site
 #' site - a unique identifier per site
 #' NS, El, Mid & Can - the mean separation between plants (m) per stratum
 #' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
 #' on the left grow directly beneath those in the stratum on the right. Acceptable values
 #' are t, f, or blank, where the outcome will be decided by the relative stratum heights.
 #' @param Flora A dataframe with the fields:
-#' species - the name of the species, which will call trait data from 'traits'
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'DefaultSpeciesParams'
 #' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
 #' stratum - numeric value from 1 to 4, counting from lowest stratum
 #' comp - % composition of that species in the stratum. If absent, all species will be considered equally
 #' hc, he, ht, hp & w - canopy dimensions for that species (m)
 #' clump - mean ratio of clump diameter to crown diameter
 #' openness - proportion of plant canopy occupied by gaps between clumps
+#' @param DefaultSpeciesParams Leaf traits database
 #' @param a The record number for which to build the table
 
-paramBuilder <- function(site, Structure, Flora, a)
+paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams=DefaultSpeciesParams, a)
 {
   # Construct component tables
   site.meta <- siteBuilder(site, Structure, a)
@@ -280,6 +284,21 @@ paramBuilder <- function(site, Structure, Flora, a)
   components <- list(site.meta, strata.meta, species.values, species.units)
   names(components) <- c("site.meta", "strata.meta", "species.values", "species.units")
   param <- ffm_assemble_table(components)
+
+  # Adjust sep to width
+  species.values$weightedW <- species.values$composition * species.values$w
+  ww <- species.values%>%
+    select(stratum, composition, weightedW)%>%
+    group_by(stratum) %>%
+    summarize_all(sum) %>%
+    mutate(mw = weightedW/composition)
+
+  for (stNum in 1:max(ww$stratum)) {
+    param <- ffm_set_stratum_param(param, stNum, "plantSeparation", ww$mw[stNum])
+  }
+
+  # Change species param leafForm to characters
+  DefaultSpeciesParams$leafForm <- as.character(DefaultSpeciesParams$leafForm)
 
   # Fill empty traits
   param <- ffm_complete_params(param)
@@ -301,13 +320,15 @@ paramBuilder <- function(site, Structure, Flora, a)
 #' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
 #' fline - the fireline length in m
 #' @param Structure A dataframe with the fields:
+#' record - a unique, consecutively numbered identifier per site
 #' site - a unique identifier per site
 #' NS, El, Mid & Can - the mean separation between plants (m) per stratum
 #' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
 #' on the left grow directly beneath those in the stratum on the right. Acceptable values
 #' are t, f, or blank, where the outcome will be decided by the relative stratum heights.
 #' @param Flora A dataframe with the fields:
-#' species - the name of the species, which will call trait data from 'traits'
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'DefaultSpeciesParams'
 #' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
 #' stratum - numeric value from 1 to 4, counting from lowest stratum
 #' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
@@ -321,6 +342,7 @@ paramBuilder <- function(site, Structure, Flora, a)
 #' leafThickness, leafWidth, leafLength, leafSeparation - leaf dimensions (m)
 #' stemOrder - stem ramification
 #' ignitionTemp - minimum temperature at which the leaf can ignite (deg C)
+#' @param DefaultSpeciesParams Leaf traits database
 #' @param siteV An optional dataframe with the same fields as 'site', but providing standard deviations of numerical values
 #' @param commV An optional dataframe with the same fields as 'community', but providing standard deviations of numerical values
 #' @param traitV An optional dataframe with the same fields as 'traits', but providing ranges of numerical values
@@ -401,7 +423,8 @@ fireSet <- function(site, Structure, Flora, traits = DefaultSpeciesParams)
 
 #####################################################################
 
-#' Randomly modifies plant traits within defined ranges for non-deterministic predictions
+#' Randomly modifies plant traits within defined ranges for non-deterministic predictions,
+#' then runs the model
 #'
 #' uses Monte Carlo, for set wind, slope, DFMC & temperature
 #' LFMC, heights and leaf traits randomly varied within defined ranges
@@ -409,11 +432,7 @@ fireSet <- function(site, Structure, Flora, traits = DefaultSpeciesParams)
 #' @param base-params Parameter input table
 #' @param out.db Name of the exported database
 #' @param jitters Number of repetitions
-#' @param s Slope of the site (degrees)
 #' @param l Variation around input leaf dimensions
-#' @param tempM Mean air teperature (degC)
-#' @param Dm Proportion dead fuel moisture
-#' @param winds wind velocity (km/h)
 #' @param Ms Standard deviation of LFMC
 #' @param Pm Multiplier of mean LFMC
 #' @param Mr Truncates LFMC variability by +/- Pm * LFMC
@@ -423,29 +442,25 @@ fireSet <- function(site, Structure, Flora, traits = DefaultSpeciesParams)
 #' tempm = 30, Dm = 0.07, windl = 0, windst = 50,
 #' Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
 
-run_ffm_plantVar <- function (base.params, out.db = "out_mc.db", jitters = 100, s = 0,
-                              l = 0.1, tempm = 30, Dm = 0.07, winds = 20, Ms = 0.01,
+run_ffm_plantVar <- function (base.params, out.db = "out_mc.db", jitters = 100,
+                              l = 0.1, Ms = 0.01,
                               Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
 {
-  strata <- strata(base.params)
+  strataN <- strata(base.params)
   species <- species(base.params)
   db <- ffm_create_database(out.db, delete.existing = TRUE,
                             use.transactions = TRUE)
-  tbl <- base.params %>%
-    ffm_set_site_param("slope", s, "deg") %>%
-    ffm_set_site_param("temperature", tempm, "degc") %>%
-    ffm_set_site_param("deadFuelMoistureProp", Dm) %>%
-    ffm_set_site_param("windSpeed", winds, "km/h")
+  tbl <- base.params
   pbar <- txtProgressBar(max = jitters, style = 3)
   for (i in 1:jitters) {
     tbl <- ffm_param_variance(tbl, max.prop = l, method = "uniform")
     SpeciesN <- 1
     SpeciesP <- 1
     si <- 1
-    StN <- as.numeric(count(strata))
+    StN <- as.numeric(count(strataN))
     for (loop in 1:StN) {
-      if (runif(1) <= strata$cover[si]) {
-        for (t in 1:strata$speciesN[si]) {
+      if (runif(1) <= strataN$cover[si]) {
+        for (t in 1:strataN$speciesN[si]) {
           Mrand <- Pm * rtnorm(n = 1, mean = species$lfmc[SpeciesN],
                                sd = Ms, a = species$lfmc[SpeciesN]/Mr, b = species$lfmc[SpeciesN] *
                                  Mr)
@@ -455,13 +470,13 @@ run_ffm_plantVar <- function (base.params, out.db = "out_mc.db", jitters = 100, 
         }
       }
       else {
-        for (f in 1:strata$speciesN[si]) {
+        for (f in 1:strataN$speciesN[si]) {
           tbl <- tbl %>% ffm_set_species_param(si, SpeciesN,
                                                "liveLeafMoisture", 100)
           SpeciesN = SpeciesN + 1
         }
       }
-      for (p in 1:strata$speciesN[si]) {
+      for (p in 1:strataN$speciesN[si]) {
         peak <- rtnorm(n = 1, mean = species$hp[SpeciesP],
                        sd = Hs, a = species$hp[SpeciesP]/Hr, b = species$hp[SpeciesP] *
                          Hr)
@@ -482,3 +497,137 @@ run_ffm_plantVar <- function (base.params, out.db = "out_mc.db", jitters = 100, 
   cat("Finished.  Output written to", out.db)
 }
 
+#####################################################################
+
+#' Randomly modifies plant traits within defined ranges for non-deterministic predictions
+#'
+#' @param base-params Parameter input table
+#' @param Strata - A dataframe of stratum properties as output by the function 'strata'
+#' @param Species - A dataframe of species properties as output by the function 'species'
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Hs Standard deviation of plant height variations
+#' @param Hr Truncates plant height variability by +/- Hr * height
+#' @examples run_ffm_ND(Param, "MC", l = 0.1,
+#' Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
+plantVar <- function (base.params, out.db = "out_mc.db", Strata, Species,
+                      l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
+{
+
+  tbl <- base.params
+
+  tbl <- ffm_param_variance(tbl, max.prop = l, method = "uniform")
+  SpeciesN <- 1
+  SpeciesP <- 1
+
+  StN <- as.numeric(count(Strata))
+  for (si in 1:StN) {
+    if (runif(1) <= Strata$cover[si]) {
+      for (t in 1:Strata$speciesN[si]) {
+        Mrand <- Pm * rtnorm(n = 1, mean = Species$lfmc[SpeciesN],
+                             sd = Ms, a = Species$lfmc[SpeciesN]/Mr, b = Species$lfmc[SpeciesN] *
+                               Mr)
+        tbl <- tbl %>% ffm_set_species_param(si, SpeciesN,
+                                             "liveLeafMoisture", Mrand)
+        (SpeciesN = SpeciesN + 1)
+      }
+    }
+    else {
+      for (f in 1:Strata$speciesN[si]) {
+        tbl <- tbl %>% ffm_set_species_param(si, SpeciesN,
+                                             "liveLeafMoisture", 100)
+        SpeciesN = SpeciesN + 1
+      }
+    }
+    for (p in 1:Strata$speciesN[si]) {
+      peak <- rtnorm(n = 1, mean = Species$hp[SpeciesP],
+                     sd = Hs, a = Species$hp[SpeciesP]/Hr, b = Species$hp[SpeciesP] *
+                       Hr)
+      tbl <- tbl %>%
+        ffm_set_species_param(si, SpeciesP, "hp", peak) %>%
+        ffm_set_species_param(si, SpeciesP, "ht", peak * Species$htR[SpeciesP]) %>%
+        ffm_set_species_param(si, SpeciesP, "he", peak * Species$heR[SpeciesP]) %>%
+        ffm_set_species_param(si, SpeciesP, "hc", peak *
+                                Species$hcR[SpeciesP])
+      SpeciesP = SpeciesP + 1
+    }
+  }
+
+  return(tbl)
+}
+
+############################################################
+
+#' Updates parameter files with weather from a dataset,
+#' then models fire from non-deterministic plant parameters
+#'
+#' @param base.params Parameter input table
+#' @param weather A dataframe with the four fields:
+#' tm - Sequential numbering of the records
+#' T - Air temperature (deg C)
+#' W - Wind velocity (km/h)
+#' DFMC - Dead fuel moisture content (proportion ODW)
+#' @param Strata - A dataframe of stratum properties as output by the function 'strata'
+#' @param Species - A dataframe of species properties as output by the function 'species'
+#' @param out.db Name of the exported database
+#' @param jitters Number of repetitions
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Hs Standard deviation of plant height variations
+#' @param Hr Truncates plant height variability by +/- Hr * height
+#' @return dataframe
+
+weatherSet <- function(base.params, weather, out.db = "out_mc.db", jitters = 10, l = 0.1,
+                       Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
+{
+
+  # This creates a reference to a Scala Database object
+  # which will handle writing of model results to the
+  # output file.First, clear any old dataframe.
+
+  db <- ffm_create_database(out.db,
+                            delete.existing = TRUE,
+                            use.transactions = TRUE)
+
+
+  # Run the model, updating the base parameter table
+  # with MC values at each iteration
+
+  pbar <- txtProgressBar(max = max(weather$tm), style = 3)
+  for (i in 1:max(weather$tm)) {
+
+    # Read weather values from the table
+
+    w <- weather$W[[i]]
+    t <- weather$T[[i]]
+    d <- max(0.01,min(0.199,weather$DFMC[[i]]))
+
+    # Update parameter table
+    tbl <- base.params %>%
+      ffm_set_site_param("windSpeed", w, "km/h") %>%
+      ffm_set_site_param("temperature", t, "degc") %>%
+      ffm_set_site_param("deadFuelMoistureProp", d)
+
+    Strata <- strata(base.params)
+    Species <- species(base.params)
+
+    if (jitters > 0) {
+      for (j in 1:jitters) {
+        tbl <- plantVar(tbl, out.db = "out_mc.db", Strata, Species, l = l,
+                        Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hr)
+        # Run the model
+        ffm_run(tbl, db)
+      }
+    }
+    setTxtProgressBar(pbar, i)
+  }
+
+  # Tell the Scala database object to close the output file.
+  db$close()
+
+  cat("Finished.  Output written to", out.db)
+}

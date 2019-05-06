@@ -912,19 +912,26 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
 
   #Final heating
   Iso <- plant%>%
-    mutate(Height = pmax(ht, htP))%>%
-    select(repId, wind_kph, ht, htP, Height, ns, e, m, c)%>%
+    mutate(Height = pmax(ht, htP),
+          nsBase = ifelse(count(NS)==0, 0, S$base[which(S$name == "near surface")]),
+          eBase = ifelse(count(E)==0, 0, S$base[which(S$name == "elevated")]),
+          mBase = ifelse(count(M)==0, 0, S$base[which(S$name == "midstorey")]),
+          cBase = ifelse(count(C)==0, 0, S$base[which(S$name == "canopy")]),
+          nsTop = ifelse(count(NS)==0, 0, S$top[which(S$name == "near surface")]),
+          eTop = ifelse(count(E)==0, 0, S$top[which(S$name == "elevated")]),
+          mTop = ifelse(count(M)==0, 0, S$top[which(S$name == "midstorey")]),
+          cTop = ifelse(count(C)==0, 0, S$top[which(S$name == "canopy")]),
 
     #Calculate scorch and burn
-    mutate(b1 = ifelse(nNS == 0, 0, round(pmin(100,pmax(0,100*(ns-S$base[nNS])/(S$top[nNS]-S$base[nNS]))),0)),
-           b2 = ifelse(nE == 0, 0, round(pmin(100,pmax(0,100*(e-S$base[nE])/(S$top[nE]-S$base[nE]))),0)),
-           b3 = ifelse(nM == 0, 0, round(pmin(100,pmax(0,100*(m-S$base[nM])/(S$top[nM]-S$base[nM]))),0)),
-           b4 = ifelse(nC == 0, 0, round(pmin(100,pmax(0,100*(c-S$base[nC])/(S$top[nC]-S$base[nC]))),0)),
-           sc1 = ifelse(nNS == 0, 0, round(pmin(100,pmax(0,100*(Height-S$base[nNS])/(S$top[nNS]-S$base[nNS]))),0)),
-           sc2 = ifelse(nE == 0, 0, round(pmin(100,pmax(0,100*(Height-S$base[nE])/(S$top[nE]-S$base[nE]))),0)),
-           sc3 = ifelse(nM == 0, 0, round(pmin(100,pmax(0,100*(Height-S$base[nM])/(S$top[nM]-S$base[nM]))),0)),
-           sc4 = ifelse(nC == 0, 0, round(pmin(100,pmax(0,100*(Height-S$base[nC])/(S$top[nC]-S$base[nC]))),0)))
-
+  b1 = ifelse(nsTop == 0, 0, round(pmin(100,pmax(0,100*(ns-nsBase)/(nsTop-nsBase))),0)),
+  b2 = ifelse(eTop == 0, 0, round(pmin(100,pmax(0,100*(e-eBase)/(eTop-eBase))),0)),
+  b3 = ifelse(mTop == 0, 0, round(pmin(100,pmax(0,100*(m-mBase)/(mTop-mBase))),0)),
+  b4 = ifelse(cTop == 0, 0, round(pmin(100,pmax(0,100*(c-cBase)/(cTop-cBase))),0)),
+  sc1 = ifelse(nsTop == 0, 0, round(pmin(100,pmax(0,100*(Height-nsBase)/(nsTop-nsBase))),0)),
+  sc2 = ifelse(eTop == 0, 0, round(pmin(100,pmax(0,100*(Height-eBase)/(eTop-eBase))),0)),
+  sc3 = ifelse(mTop == 0, 0, round(pmin(100,pmax(0,100*(Height-mBase)/(mTop-mBase))),0)),
+  sc4 = ifelse(cTop == 0, 0, round(pmin(100,pmax(0,100*(Height-cBase)/(cTop-cBase))),0)))%>%
+    select(repId, wind_kph, Height, ns, e, m, c, b1, b2, b3, b4, sc1, sc2, sc3, sc4)
 
   return(Iso)
 }
@@ -1394,12 +1401,17 @@ return(surface %>%
 
 stratum <- function(flames, sites, ros, surf)
 {
-  a <- ros %>%
-    left_join(sites) %>%
-    left_join(flames) %>%
+  y <- ros%>%
+    select(repId, level, ros)
+  z <- flames %>%
+    select(repId, level, flameLength, flameAngle, flameHeight)
 
-    # Strata without flames (e.g. Canopy) will end up with NA values
-    # after doing the left_join above. Convert these missing values to zero.
+  a <- y %>%
+    left_join(z) %>%
+    left_join(sites) %>%
+
+    # Strata without ros will end up with NA values
+    # after doing the join above. Convert these missing values to zero.
     mutate(ros = ifelse(is.na(ros), 0.0, ros),
            flameHeight = ifelse(is.na(flameHeight), 0.0, flameHeight),
            flameLength = ifelse(is.na(flameLength), 0.0, flameLength),
@@ -1408,15 +1420,17 @@ stratum <- function(flames, sites, ros, surf)
            #Duplicate DFMC, then create binary for spread/no spread
            extinct = deadFuelMoistureProp,
            extinct = ifelse(extinct == 0.199, 0.0, 1.0)) %>%
-    select(repId, level, flameHeight, flameLength, flameAngle, ros, windSpeed,
+    select(repId, level, fuelLoad, flameHeight, flameLength, flameAngle, ros, windSpeed,
            deadFuelMoistureProp, temperature, slope, extinct) %>%
-    mutate(slope_degrees = slope * 180 / pi,
+    mutate(oHorizon = fuelLoad * 10,
+           slope_degrees = slope * 180 / pi,
            flameA_degrees = flameAngle * 180 / pi,
            ros_kph = extinct * ros * 3.6,
            heightPlant = flameHeight * extinct,
            lengthPlant = flameLength * extinct,
            wind_kph = windSpeed * 3.6,
-           has.flame = extinct * flameHeight > 0)
+           spread = ifelse(ros > 0, 1, 0),
+           has.flame = spread + (extinct * flameHeight) > 0)
 
   # Add in surface flame descriptors
   rep <- max(a$repId)
@@ -1505,12 +1519,12 @@ strata <- function(Param)
   StL <- count(Param)-13
   StN <- Param$stratum[max(StL$n)]
 
-  #Count species per stratum (access the number by Sp[sn])
-  sn <- 1
+  #Count species per stratum
   Sp <- numeric(StN)
-  for (a in 1:StN) {
-    Sp[sn] <- ((length(which(Param$stratum == sn)))-2)/20
-    sn = sn+1
+  for(sn in 1:StN){
+    strat <- filter(Param, stratum == sn)
+    strat <- na.omit(strat)
+    Sp[sn] <- (as.numeric(max(strat$species))+1)-as.numeric(min(strat$species))
   }
 
   #COLLECT DIMENSIONS
