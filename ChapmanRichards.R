@@ -499,13 +499,12 @@ susp <- function(base.params, a, suspNS, Flora, growth, DefaultSpeciesParams, ag
 
 #########################################################################################
 
-#' Models plant height from time since fire
-#'
-#' Uses either standard Chapman-Richards negative exponential or linear functions to grow hp
-#' All other parameters are altered to maintain original proportions to hp
+#' Updates the parameter file to a designated age
+
 #'
 #' @param base.params A parameter file
 #' @param age The number of years since last fire
+#' @param tAge The age of trees at the commencement of the run
 #' @param growth A dataframe with the six fields:
 #' Species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
