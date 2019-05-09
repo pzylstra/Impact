@@ -496,3 +496,71 @@ susp <- function(base.params, a, suspNS, Flora, growth, DefaultSpeciesParams, ag
 
   return(base.params)
 }
+
+#########################################################################################
+
+#' Models plant height from time since fire
+#'
+#' Uses either standard Chapman-Richards negative exponential or linear functions to grow hp
+#' All other parameters are altered to maintain original proportions to hp
+#'
+#' @param base.params A parameter file
+#' @param age The number of years since last fire
+#' @param growth A dataframe with the six fields:
+#' Species - Name of the species consistent with other tables
+#' max - Maximum plant height (m)
+#' rate	- A constant describing the rate of growth for a Chapman Richards function
+#' @param cover A dataframe with the fields:
+#' Species - Name of the species consistent with other tables
+#' constant - Mean plant separation (m) that does not change with age
+#' exp_a	- The first constant in an exponential function describing plant separation with tsf
+#' exp_b	- The second constant in an exponential function describing plant separation with tsf
+#' @param age The number of years since last fire
+#' @return dataframe
+#'
+
+ageCommunity <- function(base.params, age, tAge, growth, cover)
+{
+  # AGE THE STAND
+  nTable <- subset(base.params, param=="name")
+  nSp <- as.numeric(count(nTable))
+  strat <- filter(base.params, param == "levelName")
+  nSt <- as.numeric(count(strat))
+  nCanopy <- subset(nTable, stratum==nSt)
+  nCsp <- as.numeric(count(nCanopy))
+  nLow <- nSp-nCsp
+
+  # Weight of the O-horizon
+  base.params <- olsen(base.params, growth, age)
+
+  # Structure of suspended dead material - still working out what to do with this
+  suspNS <- ""
+  if(suspNS != ""){
+    base.params <- susp(base.params, a, suspNS, Flora, growth,
+                        DefaultSpeciesParams, age, density = density)
+  }
+
+  for (stNum in 1:nSt) {
+    st <- strat$value[stNum]
+    sep <- coverChange(st, a, cover, Flora, age)
+    base.params <- ffm_set_stratum_param(base.params, stNum, "plantSeparation", sep)
+    spList <- filter(nTable, stratum == stNum)
+    n_a <- as.integer(spList$species[1])
+    n_b <- as.integer(max(spList$species))
+    nSusp <- as.integer((subset(base.params, value ==suspNS))$species[1])
+
+    if (stNum < nSt) {
+      for (spName in n_a:n_b)
+        if(spList$value != suspNS){
+          current <- growPlants(base.params, a, sp = nTable$value[spName], stn = stNum, growth, age)
+          base.params <- applyGrowth(base.params, nTable$value[spName], current)
+        }
+    } else {
+      for (spName in n_a:n_b)
+        current <- growPlants(base.params, a, nTable$value[spName], stn = stNum, growth, tAge)
+      base.params <- applyGrowth(base.params, nTable$value[spName], current)}
+  }
+
+  return(base.params)
+}
+##################################################################################
