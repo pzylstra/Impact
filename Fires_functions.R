@@ -301,7 +301,7 @@ paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams=DefaultSpe
   DefaultSpeciesParams$leafForm <- as.character(DefaultSpeciesParams$leafForm)
 
   # Fill empty traits
-  param <- ffm_complete_params(param)
+  param <- ffm_complete_params(param,DefaultSpeciesParams)
 
   return(param)
 }
@@ -582,16 +582,12 @@ plantVar <- function (base.params, out.db = "out_mc.db", Strata, Species,
 #' @return dataframe
 
 weatherSet <- function(base.params, weather, out.db = "out_mc.db", jitters = 10, l = 0.1,
-                       Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
+                       Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41,updateProgress = NULL)
 {
 
   # This creates a reference to a Scala Database object
   # which will handle writing of model results to the
   # output file.First, clear any old dataframe.
-
-  db <- ffm_create_database(out.db,
-                            delete.existing = TRUE,
-                            use.transactions = TRUE)
 
 
   # Run the model, updating the base parameter table
@@ -599,6 +595,8 @@ weatherSet <- function(base.params, weather, out.db = "out_mc.db", jitters = 10,
 
   pbar <- txtProgressBar(max = max(weather$tm), style = 3)
   for (i in 1:max(weather$tm)) {
+    ## Create database and delete the last part
+    db.recreate <- i == 1
 
     # Read weather values from the table
 
@@ -620,14 +618,18 @@ weatherSet <- function(base.params, weather, out.db = "out_mc.db", jitters = 10,
         tbl <- plantVar(tbl, out.db = "out_mc.db", Strata, Species, l = l,
                         Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hr)
         # Run the model
-        ffm_run(tbl, db)
+        ffm_run(tbl, out.db, db.recreate = db.recreate)
       }
+    }
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ",max(weather$tm) - i )
+      updateProgress(detail = text)
     }
     setTxtProgressBar(pbar, i)
   }
 
-  # Tell the Scala database object to close the output file.
-  db$close()
 
   cat("Finished.  Output written to", out.db)
 }
