@@ -193,7 +193,7 @@ return(Con)
 arboreal <- function(Surf, Plant, percentile = 0.5, Height = 1, low = 1, high = 50, var = 10, Pressure = 1013.25,
                   Altitude = 0, RH = 0.51, Class = "mammalia", Dimension = 0.1, Area = 0.2,
                   protection = 0.02, count = 66, fibre = 0.01, Specific_heat = 2.5, skinCp = 3.5,
-                  skinK = 2, objectTemp = 38, Shape = "Flat")
+                  skinK = 2, objectTemp = 38, Shape = "Flat",updateProgress = NULL)
 {
   # Collect testing stats
   ROS <- mean(Surf$ros_kph)/3.6
@@ -252,7 +252,7 @@ arboreal <- function(Surf, Plant, percentile = 0.5, Height = 1, low = 1, high = 
 
   # Advance one second's travel
   Horiz = Horiz - ROS
-
+  pbar <-  txtProgressBar(max = TIME,style = 3)
   # Loop through each time step and collect outputs
   for(t in 2:TIME){
     Cb <-threat(Surf, Plant, Horiz, Height, var, Pressure, Altitude) %>%
@@ -302,7 +302,14 @@ arboreal <- function(Surf, Plant, percentile = 0.5, Height = 1, low = 1, high = 
     SiteM <- quantile(Cb$tempConservation, percentile)
     SiteMCond <- quantile(Cb$tempR, percentile)
     TDM <- quantile(Cb$thermalDose, percentile)
-
+    setTxtProgressBar(pbar,t)
+    ## progress bar
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ", TIME - t)
+      updateProgress(detail = text)
+    }
     t = t + 1
     Horiz = Horiz - ROS
   }
@@ -390,7 +397,8 @@ arboreal <- function(Surf, Plant, percentile = 0.5, Height = 1, low = 1, high = 
 
 hollow <- function(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700, barkDensity = 500,
                    wood = 0.1, bark = 0.02, RH = 0.2, water = 0.2, low = 1, high = 50, var = 10, Pressure = 1013.25,
-                   Altitude = 0, Dimension = 0.3, Area = 0.03, hollowTemp = 25, Shape = "Flat")
+                   Altitude = 0, Dimension = 0.3, Area = 0.03, 
+                   hollowTemp = 25, Shape = "Flat",updateProgress = NULL)
 {
   # Collect step distance, time, and total distance
   ROS <- mean(Surf$ros_kph)/3.6
@@ -478,7 +486,7 @@ hollow <- function(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700,
 
   # Advance one second's travel
   Horiz = Horiz - ROS
-
+  pbar <-  txtProgressBar(max = TIME,style = 3)
   # Loop through each time step and collect outputs
   for(t in 2:TIME){
     Cb <-threat(Surf, Plant, Horiz, Height, var, Pressure, Altitude) %>%
@@ -551,7 +559,14 @@ hollow <- function(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700,
     barkM <- quantile(Cb$tempB, percentile)
     waterW <- quantile(Cb$waterW, percentile)
     waterB <- quantile(Cb$waterB, percentile)
-
+    setTxtProgressBar(pbar,t)
+    ##  progress bar
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ", TIME - t)
+      updateProgress(detail = text)
+    }
     t = t + 1
     Horiz = Horiz - ROS
   }
@@ -628,7 +643,8 @@ hollow <- function(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700,
 
 underground <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.5, RH = 0.2,
                         moisture = 0.2, distance = 50, trail = 300, var = 10, Pressure = 1013.25,
-                   Altitude = 0, texture = "clay", peat = 0.1, grain = "fine", unfrozen = 1, depth = 0.1, soilTemp = 25)
+                   Altitude = 0, texture = "clay", peat = 0.1, grain = "fine", 
+                   unfrozen = 1, depth = 0.1, soilTemp = 25,updateProgress = NULL)
 
 {
   # Collect step distance, time, and total distance
@@ -691,7 +707,8 @@ underground <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0
   # Advance one second's travel
   Horiz = Horiz - ROS
   HA <- abs(Horiz)
-
+  
+  pbar <-  txtProgressBar(max = TIME, style = 3)
   # Loop through each time step and collect outputs
   for(t in 2:TIME){
     Cb <-threat(Surf, Plant, HA, Height=0, var, Pressure, Altitude) %>%
@@ -736,7 +753,14 @@ underground <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0
 
     soilTemp <- quantile(Cb$soilTemp, percentile)
     moisture <- quantile(Cb$moisture, percentile)
-
+    setTxtProgressBar(pbar,t)
+    ##  progress bar
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ", TIME - t)
+      updateProgress(detail = text)
+    }
     t = t + 1
     Horiz = Horiz - ROS
     HA <- abs(Horiz)
@@ -998,7 +1022,8 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
 
 soil <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.95, RH = 0.2,
                         moisture = 0.1, distance = 50, trail = 600, var = 10, Pressure = 1013.25,
-                        Altitude = 0, texture = "sand", peat = 0, grain = "fine", unfrozen = 1, soilTemp = 25)
+                        Altitude = 0, texture = "sand", peat = 0, 
+                 grain = "fine", unfrozen = 1, soilTemp = 25,updateProgress = NULL)
 
 {
   # Collect step distance, time, and total distance
@@ -1171,7 +1196,7 @@ soil <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.95, RH
 
   # Advance one second's travel
   Horiz = Horiz - ROS
-
+  pbar <- txtProgressBar(max = TIME, style = 3)
   # Loop through each time step and collect outputs
   for(t in 2:TIME){
     Cb <-threat(Surf, Plant, Horiz, Height=0, var, Pressure, Altitude) %>%
@@ -1328,7 +1353,15 @@ soil <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.95, RH
     moistureD <- quantile(Cb$moistureD, percentile)
     soilTempE <- quantile(Cb$soilTempE, percentile)
     moistureE <- quantile(Cb$moistureE, percentile)
-
+    
+    setTxtProgressBar(pbar,t)
+    ##  progress bar
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ", TIME - t)
+      updateProgress(detail = text)
+    }
     t = t + 1
     Horiz = Horiz - ROS
   }
@@ -1361,7 +1394,7 @@ soil <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.95, RH
          repelE = ifelse(soilTempE>175, 1, 0)
   )
 
-  write.csv(Ca, "soilHeating.csv")
+  
   return(Ca)
 }
 
@@ -1908,7 +1941,7 @@ denSoil <- function(texture="loam")
 cambium <- function(Surf, Plant, percentile = 0.95, Height = 0.1, woodDensity = 700, barkDensity = 500,
                    bark = 0.04, comBark = 700, resBark = 45, cambThick = 0.01, xylemThick = 0.01, RH = 0.2,
                    moisture = 1, bMoisture = 0.2, distance = 50, trail = 100, var = 10, diameter = 20, Pressure = 1013.25,
-                   Altitude = 0, startTemp = 25, necT = 60, surfDecl = 10)
+                   Altitude = 0, startTemp = 25, necT = 60, surfDecl = 10,updateProgress=NULL)
 {
 
   # Post-front surface flame heating
@@ -2093,7 +2126,7 @@ cambium <- function(Surf, Plant, percentile = 0.95, Height = 0.1, woodDensity = 
 
   # Advance one second's travel
   Horiz = Horiz - ROS
-
+  pbar <-  txtProgressBar(max = TIME, style = 3)
   # Loop through each time step and collect outputs
   for(t in 2:TIME){
     Cb <-threat(Surf, Plant, Horiz, Height, var, Pressure, Altitude) %>%
@@ -2256,7 +2289,14 @@ cambium <- function(Surf, Plant, percentile = 0.95, Height = 0.1, woodDensity = 
     moistureD <- quantile(Cb$moistureD, percentile)
     woodTempE <- quantile(Cb$woodTempE, percentile)
     moistureE <- quantile(Cb$moistureE, percentile)
-
+    setTxtProgressBar(pbar,t)
+    ##  progress bar
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ", TIME - t)
+      updateProgress(detail = text)
+    }
     t = t + 1
     Horiz = Horiz - ROS
   }

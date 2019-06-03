@@ -213,7 +213,7 @@ olsen <- function(base.params, growth, age)
 
 fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5, ageStep = 5, firstAge = 1, steps = 10, tAge = 50, l = 0.1,
                          DefaultSpeciesParams = DefaultSpeciesParams, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41, a, suspNS,
-                         density = 300, test = 80, hKill = 90)
+                         density = 300, test = 80, hKill = 90,updateProgress = NULL)
 {
   age <- firstAge
 
@@ -270,14 +270,14 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
   IP <- repFlame(res$IgnitionPaths)
 
   # Find spread a: likelihood of fire spread
-  S1 <- x%>%
+  S1 <- x %>%
     mutate(time = ceiling(repId/jitters),
            spread = ifelse(level == "Surface",
                            ifelse(oHorizon >=4,spread,0),
                            spread))%>%
     group_by(repId)%>%
     select(repId, time, spread)%>%
-    summarise_all(max)#%>%
+    summarise_all(max)
 
   # Find spread b: likelihood of crown loss
   runsB <- runs%>%
@@ -442,6 +442,12 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     Times <- rbind(Times, Times1)
 
     cat(step, "time steps complete")
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ", steps - step)
+      updateProgress(detail = text)
+    }
   }
   return(Times)
 }
