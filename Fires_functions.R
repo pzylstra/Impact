@@ -274,35 +274,32 @@ unitBuilder <- function(Flora, a)
 
 paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams=DefaultSpeciesParams, a)
 {
-  # Construct component tables
+  #Construct component tables
   site.meta <- siteBuilder(site, Structure, a)
   strata.meta <- strataBuilder(Structure, Flora, a)
   species.values <- speciesBuilder(Flora, site, a)
   species.units <- unitBuilder(Flora, a)
-
-  # Build parameter file
+  
+  #Build parameter file
   components <- list(site.meta, strata.meta, species.values, species.units)
   names(components) <- c("site.meta", "strata.meta", "species.values", "species.units")
   param <- ffm_assemble_table(components)
-
-  # Adjust sep to width
+  
+  #Adjust sep to width
   species.values$weightedW <- species.values$composition * species.values$w
-  ww <- species.values%>%
-    select(stratum, composition, weightedW)%>%
-    group_by(stratum) %>%
-    summarize_all(sum) %>%
+  ww <- species.values %>% 
+    select(stratum, composition, weightedW) %>% 
+    group_by(stratum) %>% 
+    summarize_all(sum) %>% 
     mutate(mw = weightedW/composition)
-
-  for (stNum in 1:max(ww$stratum)) {
-    param <- ffm_set_stratum_param(param, stNum, "plantSeparation", ww$mw[stNum])
+  
+ for (stNum in 1:max(ww$stratum)) {
+    sep <- filter(strata.meta, stratum == stNum)
+    param <- ffm_set_stratum_param(param, stNum, "plantSeparation", 
+                                   pmax(sep$value[2],ww$mw[stNum]))
   }
-
-  # Change species param leafForm to characters
   DefaultSpeciesParams$leafForm <- as.character(DefaultSpeciesParams$leafForm)
-
-  # Fill empty traits
-  param <- ffm_complete_params(param,DefaultSpeciesParams)
-
+  param <- ffm_complete_params(param)
   return(param)
 }
 
