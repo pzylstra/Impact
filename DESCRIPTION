@@ -1,0 +1,18 @@
+Package: impact
+Type: Package
+Title: Fire impact functions for FRaME
+Version: 0.2.0
+Author: Philip Zylstra
+Maintainer: Philip Zylstra <pzylstra@uow.edu.au>
+Description: Fire impact modelling for FRaME, developed for the
+    Environmental Trust project 2017/RD/0139.
+    Functions calculate heat transfer processes, giving 
+    a range of environmental impacts from flames modelled in FRaME.
+License: UoW
+Imports:
+    frame,
+    dplyr,
+    extraDistr
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
