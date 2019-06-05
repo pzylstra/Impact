@@ -295,8 +295,9 @@ paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams=DefaultSpe
     mutate(mw = weightedW/composition)
 
   for (stNum in 1:max(ww$stratum)) {
-    param <- ffm_set_stratum_param(param, stNum, "plantSeparation", ww$mw[stNum])
-  }
+    sep <- filter(strata.meta, stratum == stNum)
+    param <- ffm_set_stratum_param(param, stNum, "plantSeparation", 
+                                   pmax(sep$value[2],ww$mw[stNum]))
 
   # Change species param leafForm to characters
   DefaultSpeciesParams$leafForm <- as.character(DefaultSpeciesParams$leafForm)
