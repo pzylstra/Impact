@@ -306,6 +306,7 @@ paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams=DefaultSpe
   param <- ffm_complete_params(param,DefaultSpeciesParams)
 
   return(param)
+  }
 }
 
 #####################################################################
