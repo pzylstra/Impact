@@ -273,7 +273,7 @@ unitBuilder <- function(Flora, a)
 #' @param DefaultSpeciesParams Leaf traits database
 #' @param a The record number for which to build the table
 
-paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams=DefaultSpeciesParams, a)
+paramBuilder <- function(site, Structure, Flora, DefaultSpeciesParams, a)
 {
   # Construct component tables
   site.meta <- siteBuilder(site, Structure, a)
