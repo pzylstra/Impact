@@ -1,3 +1,25 @@
+#' Models probabilistic fire behaviour
+#'
+#' @param base.params A parameter file
+#' @param db.path Name of the exported database
+#' @param jitters Number of repetitions
+#' @param slope Mean slope (degrees)
+#' @param slopeSD Standard deviation of the slope
+#' @param slopeRange Truncates variability by +/- range * mean
+#' @param temp Mean ambient air temperature (deg. C)
+#' @param tempSD Standard deviation of the temperature
+#' @param tempRange Truncates variability by +/- range * mean
+#' @param DFMC Mean dead fuel moisture content (%ODW)
+#' @param DFMCSD Standard deviation of the DFMC
+#' @param DFMCRange Truncates variability by +/- range * mean
+#' @param wind Mean wind velocity (km/h)
+#' @param windSD Standard deviation of the wind velocity
+#' @param windRange Truncates variability by +/- range * mean
+#' @param heightSD Standard deviation of the plant height
+#' @param heightRange Truncates variability by +/- range * mean
+#' @param leafVar Variation around input leaf dimensions, equivalent to l
+#' @param updateProgress Progress bar for use in the dashboard
+
 probIn <- function(base.params, db.path = "out_mc.db", jitters,
                    slope, slopeSD, slopeRange, temp, tempSD, tempRange,
                    DFMC, DFMCSD, DFMCRange, wind, windSD, windRange,
@@ -60,13 +82,25 @@ probIn <- function(base.params, db.path = "out_mc.db", jitters,
 ## drivers function
 #####
 
+#' Models fire behaviour across ranged variables
+#'
+#' @param base.params A parameter file
+#' @param db.path Name of the exported database
+#' @param jitters Number of repetitions
+#' @param windMin Lowest wind velocity to test (km/h)
+#' @param windReps Number of test steps
+#' @param windStep Size of test steps (km/h)
+#' @param moistureMultiplier Multiply all LFMC values by this amount
+#' @param moistureSD Standard deviation of LFMC
+#' @param moistureRange Truncates variability by +/- range * mean
+#' @param heightSD Standard deviation of the plant height
+#' @param heightRange Truncates variability by +/- range * mean
+#' @param leafVar Variation around input leaf dimensions, equivalent to l
+#' @param updateProgress Progress bar for use in the dashboard
+
 drivers <- function(base.params, db.path = "out_mc.db", jitters, windMin, windReps, windStep,
-                    moistureMultiplier, moistureSD, 
-                    moistureRange, heightSD, heightRange, leafVar,updateProgress = NULL) {
-  
-  # N.B. This is based on the old FRaME version without Michael's recent changes to database format. 
-  # You may need to adjust these as I don't really know how they work yet
-  
+                    moistureMultiplier, moistureSD, moistureRange, heightSD, heightRange, 
+                    leafVar,updateProgress = NULL) {
   
   # Collect original descriptors
   Strata <- strata(base.params)
