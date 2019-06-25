@@ -1,4 +1,6 @@
 #' Models plant height from time since fire
+#' 
+#' Private function, documented for current development
 #'
 #' Uses either standard Chapman-Richards negative exponential or linear functions to grow hp
 #' All other parameters are altered to maintain original proportions to hp
@@ -13,7 +15,6 @@
 #' @param sp The name of the species being modelled
 #' @param age The number of years since last fire
 #' @return dataframe
-#'
 
 growPlants <- function(Param, a, sp, stn, growth, age)
 {
@@ -72,18 +73,12 @@ growPlants <- function(Param, a, sp, stn, growth, age)
 
 #########################################
 
-#' Updates a parameter file with the growth parameters modelled for a species
-#'
-#' Note: w is currently not changed due to an error:
-#' "Error in .match_param(param, section, no.match.error = TRUE, single = TRUE) :
-#' w matches more than one parameter"
-#'
-#' @param Param A parameter file
-#' @param sp The name of the species being modelled
-#' @param current A dataframe with one row and the 5 fields
-#' hp, ht, he, hc, w, clumpDiameter, clumpSeparation; values in m
-#' @return dataframe
-#'
+# Updates a parameter file with the growth parameters modelled for a species
+#
+# Note: w is currently not changed due to an error:
+# "Error in .match_param(param, section, no.match.error = TRUE, single = TRUE) :
+# w matches more than one parameter"
+
 
 applyGrowth <- function(Param, sp, current)
 {
@@ -104,6 +99,8 @@ applyGrowth <- function(Param, sp, current)
 
 ###################################################################################
 #' Models the weighted mean of plant separation from time since fire for a named stratum
+#' 
+#' Private function, documented for current development
 #'
 #' Checks for alternate growth models
 #' @param st The name of the stratum
@@ -124,7 +121,6 @@ applyGrowth <- function(Param, sp, current)
 #' openness - ratio of gap to clump size
 #' @param age The number of years since last fire
 #' @return dataframe
-#'
 
 coverChange <- function(st, a, cover, Flora, age)
 {
@@ -153,6 +149,8 @@ coverChange <- function(st, a, cover, Flora, age)
 ##############################################################################################
 #' Models the weight of the o_horizon from time since fire and
 #' updates param file
+#' 
+#' Private function, documented for current development
 #'
 #' Olsen negative exponential function
 #'
@@ -163,9 +161,8 @@ coverChange <- function(st, a, cover, Flora, age)
 #' rate	- A constant describing the rate of growth for a Chapman Richards function
 #' @param age The number of years since last fire
 #' @return dataframe
-#'
 
-olsen <- function(base.params, growth, age)
+olson <- function(base.params, growth, age)
 {
   # Find growth curve
   ols <- filter(growth, Species == "O_horizon")
@@ -179,8 +176,10 @@ olsen <- function(base.params, growth, age)
 
 ########################################################################################
 #' Models the packing of materials in a suspended layer
+#' 
+#' Private function, documented for current development
 #'
-#' Based on an Olsen negative exponential function;updates base.params
+#' Based on a negative exponential function;updates base.params
 #'
 #' @param base.params Parameter input table
 #' @param a The number of the record to be modelled
@@ -202,7 +201,6 @@ olsen <- function(base.params, growth, age)
 #' @param age The number of years since last fire
 #' @param density Wood density (kg/m3)
 #' @return dataframe
-#'
 
 susp <- function(base.params, a, suspNS, Flora, growth, default.species.params, age, density = 300)
 {
@@ -246,7 +244,7 @@ susp <- function(base.params, a, suspNS, Flora, growth, default.species.params, 
 #' exp_a	- The first constant in an exponential function describing plant separation with tsf
 #' exp_b	- The second constant in an exponential function describing plant separation with tsf
 #' @return dataframe
-#'
+#' @export
 
 ageCommunity <- function(base.params, age, tAge, growth, cover)
 {
@@ -260,7 +258,7 @@ ageCommunity <- function(base.params, age, tAge, growth, cover)
   nLow <- nSp-nCsp
   
   # Weight of the O-horizon
-  base.params <- olsen(base.params, growth, age)
+  base.params <- olson(base.params, growth, age)
   
   # Structure of suspended dead material - still working out what to do with this
   suspNS <- ""

@@ -18,6 +18,7 @@
 #' such as produced using readLegacyParamFile
 #' @param Test The temperature of the flora, default 60 degC
 #' @return dataframe
+#' @export
 
 flora <- function(Surf, Plant, Param = Param, Test = 70)
 {
@@ -193,6 +194,7 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
 #' @param surfDecl adusts the rate at which surface flame length declines after the front
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
+#' @export
 
 cambium <- function(Surf, Plant, percentile = 0.95, Height = 0.1, woodDensity = 700, barkDensity = 500,
                     bark = 0.04, comBark = 700, resBark = 45, cambThick = 0.01, xylemThick = 0.01, RH = 0.2,
@@ -575,23 +577,15 @@ cambium <- function(Surf, Plant, percentile = 0.95, Height = 0.1, woodDensity = 
 
 #####################################################################
 
-#' Air temperature above ambient at the tree bole behind the flame front
-#'
-#' Dynamic air temperature at bole height, declining flame length exponentially
-#'
-#' Air temperature is modelled from dynamic flame segments using
-#' Weber R.O., Gill A.M., Lyons P.R.A., Moore P.H.R., Bradstock R.A., Mercer G.N. (1995)
-#' Modelling wildland fire temperatures. CALMScience Supplement, 4, 23–26.
-#'
-#' pAlphas is set to bole height - depth of surface litter
-#'
-#' @param lengthSurface Surface flame length in m
-#' @param residence Surface flame residence in seconds
-#' @param surfDecl Constant for the rate of decline in flame length
-#' @param h Height of the point being measured
-#' @param depth Depth of surface litter in m
-#' @param t Time in seconds behind the flame front
-#' @return temperature
+# Air temperature above ambient at the tree bole behind the flame front
+#
+# Dynamic air temperature at bole height, declining flame length exponentially
+#
+# Air temperature is modelled from dynamic flame segments using
+# Weber R.O., Gill A.M., Lyons P.R.A., Moore P.H.R., Bradstock R.A., Mercer G.N. (1995)
+# Modelling wildland fire temperatures. CALMScience Supplement, 4, 23–26.
+#
+# pAlphas is set to bole height - depth of surface litter
 
 bole <- function(lengthSurface = 2, residence = 300, depth = 0.05, h = 0.1, surfDecl = 10, t = 1)
 {
@@ -606,15 +600,11 @@ bole <- function(lengthSurface = 2, residence = 300, depth = 0.05, h = 0.1, surf
 
 
 #####################################################################
-#' Thermal conductivity of dry wood
-#'
-#'Model drawn from Kollmann, F. F. P. & Cote, W. A.
-#'Principles of wood science and technology I. Solid wood. (Springer-Verlag, 1968)
-#'
-#' @param T Air temperature (deg C)
-#' @param rhoW Timber density (kg/m3)
-#' @param kAir Thermal conductivity of the air at temperature T (W/M.K)
-#' @return Thermal conductivity of wood (W/mK)
+# Thermal conductivity of dry wood
+#
+# Model drawn from Kollmann, F. F. P. & Cote, W. A.
+# Principles of wood science and technology I. Solid wood. (Springer-Verlag, 1968)
+
 
 kWood <- function(T=100, rhoW=700, kAir = 0.026)
 {

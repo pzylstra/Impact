@@ -26,6 +26,9 @@ rate    - A constant describing the rate of growth for a Chapman Richards functi
 dataframe
 }
 \description{
+Private function, documented for current development
+}
+\details{
 Uses either standard Chapman-Richards negative exponential or linear functions to grow hp
 All other parameters are altered to maintain original proportions to hp
 }

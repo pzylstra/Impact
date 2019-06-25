@@ -33,5 +33,8 @@ openness - ratio of gap to clump size}
 dataframe
 }
 \description{
+Private function, documented for current development
+}
+\details{
 Checks for alternate growth models
 }

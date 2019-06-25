@@ -1,9 +1,9 @@
 #' Summary table of surface results
 #'
 #' Summarises FRaME generated surface fire behaviour by RepId
-#'
 #' @param surface The dataframe res$SurfaceResults
 #' @return dataframe
+#' @export
 
 surf <- function(surface)
 {
@@ -22,14 +22,14 @@ surf <- function(surface)
 #' Summary table of stratum results
 #'
 #' Summarises FRaME generated fire behaviour by stratum and RepId
-#'
 #' @param flames The dataframe res$FlameSummaries
 #' @param sites The dataframe res$Sites
 #' @param ros The dataframe res$ROS
-#' @param surf The dataframe produced by the extension surf
-#' @return stratum dataframe
+#' @param Surf The dataframe produced by the extension surf
+#' @return dataframe
+#' @export
 
-stratum <- function(flames, sites, ros, surf)
+stratum <- function(flames, sites, ros, Surf)
 {
   y <- ros%>%
     select(repId, level, ros)
@@ -67,9 +67,9 @@ stratum <- function(flames, sites, ros, surf)
   st <- as.numeric(count(a))/rep
   i <- 1
   for(loop in 1:rep) {
-    a$flameHeight[i]=surf$heightSurface[loop]
-    a$flameLength[i]=surf$lengthSurface[loop]
-    a$flameAngle[i]=surf$angleSurface[loop]
+    a$flameHeight[i]=Surf$heightSurface[loop]
+    a$flameLength[i]=Surf$lengthSurface[loop]
+    a$flameAngle[i]=Surf$angleSurface[loop]
     i <- i + st
   }
   return(a)
@@ -79,19 +79,20 @@ stratum <- function(flames, sites, ros, surf)
 #' Summary table of fire behaviour
 #'
 #' Summarises FRaME generated fire behaviour by RepId
-#'
-#' @param surf The dataframe surf
-#' @param stratum The dataframe stratum
-#' @return summary dataframe
+#' @param Stratum The dataframe produced by the extension stratum
+#' @param Surf The dataframe produced by the extension surf
+#' @return dataframe
+#' @export
 
-summary <- function(stratum, surf)
+
+summary <- function(Stratum, Surf)
 {
-  return(stratum %>%
+  return(Stratum %>%
            select(repId, slope_degrees, wind_kph, deadFuelMoistureProp, temperature,
                   heightPlant, lengthPlant, flameAngle, ros_kph, extinct) %>%
            group_by(repId) %>%
            summarize_all(max) %>%
-           left_join(surf) %>%
+           left_join(Surf) %>%
            mutate(fh = pmax(heightSurface, heightPlant) * extinct,
                   fl = pmax(lengthSurface, lengthPlant) * extinct,
                   zeta = 2.5*ros_kph,
@@ -103,9 +104,10 @@ summary <- function(stratum, surf)
 #'
 #' Summarises FRaME generated flame segments into a combined,
 #' representative plant flame for each repId where plants ignited
-#'
-#' @param IP The dataframe res$IgnitionPaths
+#' @param IP The dataframe res$IP
 #' @return dataframe
+#' @export
+
 
 repFlame <- function(IP)
 {
@@ -135,35 +137,35 @@ repFlame <- function(IP)
 #' Stratum descriptors from a param file
 #'
 #' For each stratum, finds mean crown width, plant separation, and number of species
-#'
-#' @param Param A parameter dataframe used for FRaME,
-#' such as produced using readLegacyParamFile
-#' @return dataframe of stratum descriptors
+#' @param base.params Input parameter file
+#' @return dataframe
+#' @export
 
-strata <- function(Param)
+
+strata <- function(base.params)
 {
   #Number of strata
-  StL <- count(Param)-13
-  StN <- Param$stratum[max(StL$n)]
+  StL <- count(base.params)-13
+  StN <- base.params$stratum[max(StL$n)]
   
   #Count species per stratum
   Sp <- numeric(StN)
   for(sn in 1:StN){
-    strat <- filter(Param, stratum == sn)
+    strat <- filter(base.params, stratum == sn)
     strat <- na.omit(strat)
     Sp[sn] <- (as.numeric(max(strat$species))+1)-as.numeric(min(strat$species))
   }
   
   #COLLECT DIMENSIONS
-  width <- Param[Param$param == "w", ]
-  comp <- Param[Param$param == "composition", ]
-  sep <- Param[Param$param == "plantSeparation", ]
-  peak <- Param[Param$param == "hp", ]
-  top <- Param[Param$param == "ht", ]
-  edge <- Param[Param$param == "he", ]
-  base <- Param[Param$param == "hc", ]
-  level <- Param[Param$param == "levelName", ]
-  name <- Param[Param$param == "levelName", ]
+  width <- base.params[base.params$param == "w", ]
+  comp <- base.params[base.params$param == "composition", ]
+  sep <- base.params[base.params$param == "plantSeparation", ]
+  peak <- base.params[base.params$param == "hp", ]
+  top <- base.params[base.params$param == "ht", ]
+  edge <- base.params[base.params$param == "he", ]
+  base <- base.params[base.params$param == "hc", ]
+  level <- base.params[base.params$param == "levelName", ]
+  name <- base.params[base.params$param == "levelName", ]
   
   #BUILD TABLE
   n <- as.data.frame(list('stratum'=name$stratum, 'name'=name$value, 'speciesN'=Sp))
@@ -195,21 +197,21 @@ strata <- function(Param)
 #' Species descriptors from a param file
 #'
 #' Finds dimensions and moisture of each species
-#'
-#' @param Param A parameter dataframe used for FRaME,
-#' such as produced using readLegacyParamFile
-#' @return dataframe of species descriptors
+#' @param base.params Input parameter file
+#' @return dataframe
+#' @export
 
-species <- function(Param)
+
+species <- function(base.params)
 {
   #Collect traits
-  sp <- Param[Param$param == "name", ]
-  lfmc <- Param[Param$param == "liveLeafMoisture", ]
-  Peak <- Param[Param$param == "hp", ]
-  Top <- Param[Param$param == "ht", ]
-  Edge <- Param[Param$param == "he", ]
-  Base <- Param[Param$param == "hc", ]
-  Width <- Param[Param$param == "w", ]
+  sp <- base.params[base.params$param == "name", ]
+  lfmc <- base.params[base.params$param == "liveLeafMoisture", ]
+  Peak <- base.params[base.params$param == "hp", ]
+  Top <- base.params[base.params$param == "ht", ]
+  Edge <- base.params[base.params$param == "he", ]
+  Base <- base.params[base.params$param == "hc", ]
+  Width <- base.params[base.params$param == "w", ]
   
   species <- as.data.frame(list('name'=sp$value, 'hp'=as.numeric(Peak$value),'ht'=as.numeric(Top$value),
                                 'hc'=as.numeric(Base$value), 'he'=as.numeric(Edge$value),

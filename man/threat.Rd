@@ -26,10 +26,12 @@ threat(Surf, repFlame, Horizontal = 10, Height = 10, var = 10,
 dataframe
 }
 \description{
-Finds the temperature, velocity, dynamic viscosity, atmospheric pressure, and density of a plume at a point
-Gives the mean flame temperature (K) and emissive power of each flame
+Private function, documented for current development
 }
 \details{
+Finds the temperature, velocity, dynamic viscosity, atmospheric pressure, and density of a plume at a point
+Gives the mean flame temperature (K) and emissive power of each flame
+
 tempAir: Air temperature is modelled from dynamic flame segments using
 Weber R.O., Gill A.M., Lyons P.R.A., Moore P.H.R., Bradstock R.A., Mercer G.N. (1995)
 Modelling wildland fire temperatures. CALMScience Supplement, 4, 23–26.

@@ -4,14 +4,13 @@
 \alias{species}
 \title{Species descriptors from a param file}
 \usage{
-species(Param)
+species(base.params)
 }
 \arguments{
-\item{Param}{A parameter dataframe used for FRaME,
-such as produced using readLegacyParamFile}
+\item{base.params}{Input parameter file}
 }
 \value{
-dataframe of species descriptors
+dataframe
 }
 \description{
 Finds dimensions and moisture of each species

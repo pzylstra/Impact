@@ -1,4 +1,28 @@
-# Models probabilistic fire behaviour
+#' Models probabilistic fire behaviour
+#' @param base.params Input parameter file
+#' @param db.path Name of the exported database
+#' @param jitters Number of repetitions for each row in the weather table
+#' @param slope Mean slope (deg)
+#' @param slopeSD Standard deviation of slope
+#' @param slopeRange Truncates variability by +/- mean * range
+#' @param temp Mean ambient temperature (deg.C)
+#' @param tempSD Standard deviation of temp
+#' @param tempRange Truncates variability by +/- mean * range
+#' @param DFMC Mean DFMC (%ODW)
+#' @param DFMCSD Standard deviation of DFMC
+#' @param DFMCRange Truncates variability by +/- mean * range
+#' @param wind Mean wind velocity (km/h)
+#' @param windSD Standard deviation of wind velocity
+#' @param windRange Truncates variability by +/- mean * range
+#' @param moistureMultiplier Multiplies all LFMC values by this number
+#' @param moistureSD Standard deviation of moisture
+#' @param moistureRange Truncates variability by +/- mean * range
+#' @param heightSD Standard deviation of plant height
+#' @param heightRange Truncates variability by +/- mean * range
+#' @param leafVar Variation around input leaf dimensions, equivalent to l
+#' @param updateProgress Progress bar for use in the dashboard
+#' @return dataframe
+#' @export
 
 probIn <- function(base.params, db.path = "out_mc.db", jitters,
                    slope, slopeSD, slopeRange, temp, tempSD, tempRange,
@@ -62,7 +86,21 @@ probIn <- function(base.params, db.path = "out_mc.db", jitters,
 ## drivers function
 #####
 
-# Models fire behaviour across ranged variables
+#' Models fire behaviour across ranged variables
+#' @param base.params Input parameter file
+#' @param db.path Name of the exported database
+#' @param jitters Number of repetitions for each row in the weather table
+#' @param windMin Lowest wind velocity tested (km/h)
+#' @param windReps Number of wind speeds tested
+#' @param windStep Gap (km/h) between wind steps
+#' @param moistureMultiplier Multiplies all LFMC values by this number
+#' @param moistureSD Standard deviation of moisture
+#' @param moistureRange Truncates variability by +/- mean * range
+#' @param heightSD Standard deviation of plant height
+#' @param heightRange Truncates variability by +/- mean * range
+#' @param leafVar Variation around input leaf dimensions, equivalent to l
+#' @param updateProgress Progress bar for use in the dashboard
+#' @export
 
 drivers <- function(base.params, db.path = "out_mc.db", jitters, windMin, windReps, windStep,
                     moistureMultiplier, moistureSD, moistureRange, heightSD, heightRange, 

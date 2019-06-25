@@ -53,7 +53,8 @@
 #' @param soilTemp The starting temperature under the ground (deg C)
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
-#'
+#' @export
+
 
 soil <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.95, RH = 0.2,
                  moisture = 0.1, distance = 50, trail = 600, var = 10, Pressure = 1013.25,
@@ -435,20 +436,17 @@ soil <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.95, RH
 
 #####################################################################
 
-#' Soil density
-#'
-#' Finds soil density from texture
-#'
-#'Porosity of soils taken from Rawls, W. J., Brakensiek, D. L. & Saxton, K. E.
-#'Estimation of soil water properties. Transactions of the ASAE 25, 1316–1320 & 1328 (1982).
-#'
-#'Density equation is from Peters-Lidard, C. D., Blackburn, E., Liang, X. & Wood, E. F.
-#'The effect of soil thermal conductivity parameterization on surface energy fluxes and temperatures.
-#'J. Atmos. Sci. 55, 1209–1224 (1998).
-#'
-#'
-#' @param texture Soil texture. Allowable values are: "sand", "loamy sand", "sandy loam", "sandy clay loam",
-#' "sand clay", "loam", "clay loam", "silt loam", "clay", "silty clay", "silty clay loam", "silt"
+# Soil density
+#
+# Finds soil density from texture
+# 
+# Porosity of soils taken from Rawls, W. J., Brakensiek, D. L. & Saxton, K. E.
+# Estimation of soil water properties. Transactions of the ASAE 25, 1316–1320 & 1328 (1982).
+# 
+# Density equation is from Peters-Lidard, C. D., Blackburn, E., Liang, X. & Wood, E. F.
+# The effect of soil thermal conductivity parameterization on surface energy fluxes and temperatures.
+# J. Atmos. Sci. 55, 1209–1224 (1998).
+
 
 denSoil <- function(texture="loam")
 {
@@ -469,21 +467,14 @@ denSoil <- function(texture="loam")
 
 #####################################################################
 
-#' Thermal conductivity of soil
-#'
-#'Model drawn from Johansen, O.
-#'Thermal conductivity of soils. PhD Thesis (University of Trondheim, 1971)
-#'Modified by Farouki, O. Thermal properties of soils. (Trans Tech, 1986)
-#'
-#'Porosity taken from Rawls, W. J., Brakensiek, D. L. & Saxton, K. E.
-#'Estimation of soil water properties. Transactions of the ASAE 25, 1316–1320 & 1328 (1982).
-#'
-#' @param texture Soil texture. Allowable values are: "sand", "loamy sand", "sandy loam", "sandy clay loam",
-#' "sand clay", "loam", "clay loam", "silt loam", "clay", "silty clay", "silty clay loam", "silt"
-#' @param saturation Water saturation of the soil, value between 0.1 and 1
-#' @param grain Allowable values are "fine" or "coarse"
-#' @param unfrozen Proportion of soil unfrozen, between 0 and 1
-#' @return Thermal conductivity of soil (W/mK)
+# Thermal conductivity of soil
+#
+# Model drawn from Johansen, O.
+# Thermal conductivity of soils. PhD Thesis (University of Trondheim, 1971)
+# Modified by Farouki, O. Thermal properties of soils. (Trans Tech, 1986)
+# 
+# Porosity taken from Rawls, W. J., Brakensiek, D. L. & Saxton, K. E.
+# Estimation of soil water properties. Transactions of the ASAE 25, 1316–1320 & 1328 (1982).
 
 kSoil <- function(texture="loam", saturation=0.3, grain="fine", unfrozen=1)
 {
@@ -538,21 +529,15 @@ kSoil <- function(texture="loam", saturation=0.3, grain="fine", unfrozen=1)
 
 #####################################################################
 
-#' Specific heat of soil
-#'
-#' Finds volumetric specific heat from the mineral, organic and water components of the soil
-#'
-#'Specific heats of soil components estimated from figures 108 & 111 in
-#'Farouki, O. Thermal properties of soils. (Trans Tech, 1981).
-#'
-#'Water specific heat 4185 J/kg.K
-#'
-#' @param temp soil temperature in K
-#' @param texture Soil texture. Allowable values are: "sand", "loamy sand", "sandy loam", "sandy clay loam",
-#' "sand clay", "loam", "clay loam", "silt loam", "clay", "silty clay", "silty clay loam", "silt"
-#' @param peat Organic proportion of the soil
-#' @param moisture Water proportion ODW of the soil
-#' @return Specific heat of soil (J/kg.K)
+# Specific heat of soil
+#
+# Finds volumetric specific heat from the mineral, organic and water components of the soil
+#
+# Specific heats of soil components estimated from figures 108 & 111 in
+# Farouki, O. Thermal properties of soils. (Trans Tech, 1981).
+#
+# Water specific heat 4185 J/kg.K
+
 
 cpSoil <- function(temp = 300, texture="loam", peat = 0.2, moisture=0.3)
 {
@@ -606,19 +591,14 @@ cpSoil <- function(temp = 300, texture="loam", peat = 0.2, moisture=0.3)
 
 #####################################################################
 
-#' Soil saturation
-#'
-#' Finds saturation from ODW moisture and texture
-#'
-#'Field capacity of soils taken from Salter, P. J. & Williams, J. B.
-#'The influence of texture on the moisture characteristics of soil.
-#'V. Relationships between particle-size composition and moisturecontents
-#'at the upper and lower limits of available-water. J. Soil Sci. 20, 126–131 (1969).
-#'
-#'
-#' @param texture Soil texture. Allowable values are: "sand", "loamy sand", "sandy loam", "sandy clay loam",
-#' "sand clay", "loam", "clay loam", "silt loam", "clay", "silty clay", "silty clay loam", "silt"
-#' @param moisture Water proportion ODW of the soil
+# Soil saturation
+#
+# Finds saturation from ODW moisture and texture
+#
+# Field capacity of soils taken from Salter, P. J. & Williams, J. B.
+# The influence of texture on the moisture characteristics of soil.
+# V. Relationships between particle-size composition and moisturecontents
+# at the upper and lower limits of available-water. J. Soil Sci. 20, 126–131 (1969).
 
 satSoil <- function(texture="loam", moisture=0.3)
 {

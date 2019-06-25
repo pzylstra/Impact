@@ -4,15 +4,15 @@
 \alias{summary}
 \title{Summary table of fire behaviour}
 \usage{
-summary(stratum, surf)
+summary(Stratum, Surf)
 }
 \arguments{
-\item{stratum}{The dataframe stratum}
+\item{Stratum}{The dataframe produced by the extension stratum}
 
-\item{surf}{The dataframe surf}
+\item{Surf}{The dataframe produced by the extension surf}
 }
 \value{
-summary dataframe
+dataframe
 }
 \description{
 Summarises FRaME generated fire behaviour by RepId

@@ -39,5 +39,8 @@ rate    - A constant describing the rate of growth for a Chapman Richards functi
 dataframe
 }
 \description{
-Based on an Olsen negative exponential function;updates base.params
+Private function, documented for current development
+}
+\details{
+Based on a negative exponential function;updates base.params
 }

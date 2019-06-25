@@ -1,14 +1,8 @@
-#' Configuration or view factor
-#'
-#' Calculates the configuration factor for radiative heat transfer as used
-#' in AS3959 for bushfire risk assessment of built structures
-#'
-#' @param Fl Flame length (metres)
-#' @param Fa Flame angle (radians)
-#' @param D Distance to the receiver (metres)
-#' @param H Height of the receiver (metres)
-#' @param S Slope (degrees)
-#' @return Phi - the configuration factor
+# Configuration or view factor
+#
+# Calculates the configuration factor for radiative heat transfer as used
+# in AS3959 for bushfire risk assessment of built structures
+
 
 phi <- function(Fl, Fa, S, D, H)
 {
@@ -30,20 +24,15 @@ phi <- function(Fl, Fa, S, D, H)
 }
 
 #####################################################################
-#' Atmospheric attenuation
-#'
-#' Calculates the atmospheric transmissivity of radiation as used
-#' in AS3959 for bushfire risk assessment of built structures. Equations from
-#' Fuss, S P & Hamins, A
-#' An estimate of the correction applied to radiant flame measurements due to
-#' attenuation by atmospheric CO2and H2O.
-#' Fire Saf. J. 37, 181–190 (2002)
-#'
-#' @param D Distance from flame to receiver (metres)
-#' @param flameTemp Integrated temperature across the flame (kelvin)
-#' @param temperature Ambient air temperature (kelvin)
-#' @param rh Relative humidity (proportion)
-#' @return tau - the atmospheric attenuation
+# Atmospheric attenuation
+#
+# Calculates the atmospheric transmissivity of radiation as used
+# in AS3959 for bushfire risk assessment of built structures. Equations from
+# Fuss, S P & Hamins, A
+# An estimate of the correction applied to radiant flame measurements due to
+# attenuation by atmospheric CO2and H2O.
+# Fire Saf. J. 37, 181–190 (2002)
+
 
 tau <- function(D = 200, flameTemp = 1300, temperature = 288, rh = 0.51)
 {

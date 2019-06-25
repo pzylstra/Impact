@@ -56,6 +56,7 @@
 #' @param Shape The approximate shape of the animal - either "Flat", "Sphere", or "Cylinder"
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
+#' @export
 
 arboreal <- function(Surf, Plant, percentile = 0.5, Height = 1, low = 1, high = 50, var = 10, Pressure = 1013.25,
                      Altitude = 0, RH = 0.51, Class = "mammalia", Dimension = 0.1, Area = 0.2,
@@ -258,6 +259,7 @@ arboreal <- function(Surf, Plant, percentile = 0.5, Height = 1, low = 1, high = 
 #' @param Shape The approximate shape of the hollow exterior - either "Flat", "Sphere", or "Cylinder"
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
+#' @export
 
 hollow <- function(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700, barkDensity = 500,
                    wood = 0.1, bark = 0.02, RH = 0.2, water = 0.2, low = 1, high = 50, var = 10, Pressure = 1013.25,
@@ -501,7 +503,7 @@ hollow <- function(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700,
 #' @param soilTemp The starting temperature under the ground (deg C)
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
-#'
+#' @export
 
 underground <- function(Surf, Plant, diameter = 6, surface = 677, percentile = 0.5, RH = 0.2,
                         moisture = 0.2, distance = 50, trail = 300, var = 10, Pressure = 1013.25,

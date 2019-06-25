@@ -4,14 +4,13 @@
 \alias{strata}
 \title{Stratum descriptors from a param file}
 \usage{
-strata(Param)
+strata(base.params)
 }
 \arguments{
-\item{Param}{A parameter dataframe used for FRaME,
-such as produced using readLegacyParamFile}
+\item{base.params}{Input parameter file}
 }
 \value{
-dataframe of stratum descriptors
+dataframe
 }
 \description{
 For each stratum, finds mean crown width, plant separation, and number of species

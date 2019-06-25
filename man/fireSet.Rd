@@ -49,5 +49,5 @@ ignitionTemp - minimum temperature at which the leaf can ignite (deg C)}
 dataframe
 }
 \description{
-Models fires using sites constructed from imported tables
+Private function in development
 }

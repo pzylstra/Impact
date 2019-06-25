@@ -4,7 +4,7 @@
 \alias{stratum}
 \title{Summary table of stratum results}
 \usage{
-stratum(flames, sites, ros, surf)
+stratum(flames, sites, ros, Surf)
 }
 \arguments{
 \item{flames}{The dataframe res$FlameSummaries}
@@ -13,10 +13,10 @@ stratum(flames, sites, ros, surf)
 
 \item{ros}{The dataframe res$ROS}
 
-\item{surf}{The dataframe produced by the extension surf}
+\item{Surf}{The dataframe produced by the extension surf}
 }
 \value{
-stratum dataframe
+dataframe
 }
 \description{
 Summarises FRaME generated fire behaviour by stratum and RepId

@@ -1,22 +1,4 @@
-#' Builds the dataframe site.meta from input tables
-#'
-#' @param site A dataframe with the six fields:
-#' record - a unique, consecutively numbered identifier per site
-#' site - the name of each record
-#' slope - slope in degrees
-#' wind - velocity in km/h
-#' temp - ambient temperature deg. C
-#' dfmc - moisture content of fine dead fuels in whole numbers (eg 0.1 for 10%)
-#' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
-#' fline - the fireline length in m
-#' @param Structure A dataframe with the fields:
-#' record - a unique, consecutively numbered identifier per site
-#' site - a unique identifier per site
-#' NS, El, Mid & Can - the mean separation between plants (m) per stratum
-#' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
-#' on the left grow directly beneath those in the stratum on the right. Acceptable values
-#' are t, f, or blank, where the outcome will be decided by the relative stratum heights.
-#' @param a The site number for which to build the table
+# Builds the dataframe site.meta from input tables
 
 siteBuilder <- function(site, Structure, a)
 {
@@ -63,25 +45,7 @@ siteBuilder <- function(site, Structure, a)
 
 #####################################################################
 
-#' Builds the dataframe strata.meta from input tables
-#'
-#' @param Structure A dataframe with the fields:
-#' record - a unique, consecutively numbered identifier per site
-#' site - the name of each record
-#' NS, El, Mid & Can - the mean separation between plants (m) per stratum
-#' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
-#' on the left grow directly beneath those in the stratum on the right. Acceptable values
-#' are t, f, or blank, where the outcome will be decided by the relative stratum heights.
-#' @param Flora A dataframe with the fields:
-#' record - a unique, consecutively numbered identifier per site
-#' species - the name of the species, which will call trait data from 'default.species.params'
-#' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
-#' stratum - numeric value from 1 to 4, counting from lowest stratum
-#' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
-#' base, he, ht, top & w - canopy dimensions for that species (m). he and ht are optional
-#' clump - mean ratio of clump diameter to crown diameter
-#' openness - ratio of gap to clump size
-#' @param a The record number for which to build the table
+# Builds the dataframe strata.meta from input tables
 
 strataBuilder <- function(Structure, Flora, a)
 {
@@ -142,27 +106,8 @@ strataBuilder <- function(Structure, Flora, a)
 }
 #####################################################################
 
-#' Builds the dataframe species.values from input tables
-#'
-#' @param Flora A dataframe with the fields:
-#' record - a unique, consecutively numbered identifier per site
-#' species - the name of the species, which will call trait data from 'default.species.params'
-#' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
-#' stratum - numeric value from 1 to 4, counting from lowest stratum
-#' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
-#' base, he, ht, top & w - canopy dimensions for that species (m). he and ht are optional
-#' clump - mean ratio of clump diameter to crown diameter
-#' openness - ratio of gap to clump size
-#' @param site A dataframe with the six fields:
-#' record - a unique, consecutively numbered identifier per site
-#' site - the name of each record
-#' slope - slope in degrees
-#' wind - velocity in km/h
-#' temp - ambient temperature deg. C
-#' dfmc - moisture content of fine dead fuels in whole numbers (eg 0.1 for 10%)
-#' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
-#' fline - the fireline length in m
-#' @param a The site number for which to build the table
+# Builds the dataframe species.values from input tables
+
 
 speciesBuilder <- function(Flora, site, a)
 {
@@ -210,18 +155,7 @@ speciesBuilder <- function(Flora, site, a)
 
 #####################################################################
 
-#' Builds the dataframe species.units from input tables
-#'
-#' @param Flora A dataframe with the fields:
-#' record - a unique, consecutively numbered identifier per site
-#' species - the name of the species, which will call trait data from 'default.species.params'
-#' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
-#' stratum - numeric value from 1 to 4, counting from lowest stratum
-#' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
-#' base, he, ht, top & w - canopy dimensions for that species (m). he and ht are optional
-#' clump - mean ratio of clump diameter to crown diameter
-#' openness - ratio of gaps between clumps to clump size
-#' @param a The record number for which to build the table
+# Builds the dataframe species.units from input tables
 
 unitBuilder <- function(Flora, a)
 {
@@ -280,6 +214,7 @@ unitBuilder <- function(Flora, a)
 #' openness - proportion of plant canopy occupied by gaps between clumps
 #' @param default.species.params Leaf traits database
 #' @param a The record number for which to build the table
+#' @export
 
 paramBuilder <- function(site, Structure, Flora, default.species.params, a)
 {

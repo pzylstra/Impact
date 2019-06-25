@@ -1,4 +1,6 @@
 #' Heat and plume produced by a fire front
+#' 
+#' Private function, documented for current development
 #'
 #' Finds the temperature, velocity, dynamic viscosity, atmospheric pressure, and density of a plume at a point
 #' Gives the mean flame temperature (K) and emissive power of each flame

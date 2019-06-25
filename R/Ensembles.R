@@ -17,15 +17,11 @@
 #' @param Hr Truncates plant height variability by +/- Hr * height
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
+#' @export
 
 weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10, l = 0.1,
                        Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41,updateProgress = NULL)
 {
-  
-  # This creates a reference to a Scala Database object
-  # which will handle writing of model results to the
-  # output file.First, clear any old dataframe.
-  
   
   # Run the model, updating the base parameter table
   # with MC values at each iteration
@@ -120,6 +116,7 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' @param Hr Truncates plant height variability by +/- Hr * height
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
+#' @export
 
 fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5, ageStep = 5, firstAge = 1, steps = 10, tAge = 50, l = 0.1,
                          default.species.params = default.species.params, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41, a, suspNS,
@@ -364,6 +361,8 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
 
 ####################################################################
 #' Models fires using sites constructed from imported tables
+#' 
+#' Private function in development
 
 #' @param site A dataframe with the six fields:
 #' record - a unique, consecutively numbered identifier per site
@@ -473,17 +472,8 @@ fireSet <- function(site, Structure, Flora, traits = default.species.params)
 #####################################################################
 
 #' Randomly modifies plant traits within defined ranges for non-deterministic predictions
-#'
-#' @param base.params Parameter input table
-#' @param Strata - A dataframe of stratum properties as output by the function 'strata'
-#' @param Species - A dataframe of species properties as output by the function 'species'
-#' @param l Variation around input leaf dimensions
-#' @param Ms Standard deviation of LFMC
-#' @param Pm Multiplier of mean LFMC
-#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
-#' @param Hs Standard deviation of plant height variations
-#' @param Hr Truncates plant height variability by +/- Hr * height
 #' @return dataframe
+#' @export
 
 plantVar <- function (base.params, Strata, Species,
                       l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41)
