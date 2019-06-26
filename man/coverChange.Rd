@@ -12,7 +12,7 @@ coverChange(st, a, cover, Flora, age)
 \item{a}{The number of the record to be modelled}
 
 \item{cover}{A dataframe with the fields:
-Species - Name of the species consistent with other tables
+species - Name of the species consistent with other tables
 constant - Mean plant separation (m) that does not change with age
 exp_a    - The first constant in an exponential function describing plant separation with tsf
 exp_b    - The second constant in an exponential function describing plant separation with tsf}
@@ -33,8 +33,5 @@ openness - ratio of gap to clump size}
 dataframe
 }
 \description{
-Private function, documented for current development
-}
-\details{
 Checks for alternate growth models
 }

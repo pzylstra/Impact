@@ -16,7 +16,7 @@ growPlants(Param, a, sp, stn, growth, age)
 \item{stn}{The number of the stratum}
 
 \item{growth}{A dataframe with the six fields:
-Species - Name of the species consistent with other tables
+species - Name of the species consistent with other tables
 max - Maximum plant height (m)
 rate    - A constant describing the rate of growth for a Chapman Richards function}
 
@@ -26,9 +26,6 @@ rate    - A constant describing the rate of growth for a Chapman Richards functi
 dataframe
 }
 \description{
-Private function, documented for current development
-}
-\details{
 Uses either standard Chapman-Richards negative exponential or linear functions to grow hp
 All other parameters are altered to maintain original proportions to hp
 }

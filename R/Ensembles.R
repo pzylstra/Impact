@@ -83,10 +83,10 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' W - Wind velocity (km/h)
 #' DFMC - Dead fuel moisture content (proportion ODW)
 #' @param growth A dataframe with the six fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
 #' @param cover A dataframe with the fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' constant - Mean plant separation (m) that does not change with age
 #' exp_a	- The first constant in an exponential function describing plant separation with tsf
 #' exp_b	- The second constant in an exponential function describing plant separation with tsf
@@ -134,7 +134,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
   nLow <- nSp-nCsp
 
   # Weight of the O-horizon
-  base.params <- olsen(base.params, growth, age)
+  base.params <- olson(base.params, growth, age)
 
   # Structure of suspended dead material
   if(suspNS != ""){
@@ -244,7 +244,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     tAge <- tAge + ageStep * step
 
     # Weight of the O-horizon
-    base.params <- olsen(base.params, growth, age)
+    base.params <- olson(base.params, growth, age)
 
     # Structure of suspended dead material
     if(suspNS != ""){

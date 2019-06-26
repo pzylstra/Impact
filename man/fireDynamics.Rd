@@ -20,11 +20,11 @@ W - Wind velocity (km/h)
 DFMC - Dead fuel moisture content (proportion ODW)}
 
 \item{growth}{A dataframe with the six fields:
-Species - Name of the species consistent with other tables
+species - Name of the species consistent with other tables
 max - Maximum plant height (m)}
 
 \item{cover}{A dataframe with the fields:
-Species - Name of the species consistent with other tables
+species - Name of the species consistent with other tables
 constant - Mean plant separation (m) that does not change with age
 exp_a    - The first constant in an exponential function describing plant separation with tsf
 exp_b    - The second constant in an exponential function describing plant separation with tsf}

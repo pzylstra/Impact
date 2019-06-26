@@ -1,12 +1,10 @@
 #' Models plant height from time since fire
-#' 
-#' Private function, documented for current development
 #'
 #' Uses either standard Chapman-Richards negative exponential or linear functions to grow hp
 #' All other parameters are altered to maintain original proportions to hp
 #'
 #' @param growth A dataframe with the six fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
 #' rate	- A constant describing the rate of growth for a Chapman Richards function
 #' @param stn The number of the stratum
@@ -15,6 +13,7 @@
 #' @param sp The name of the species being modelled
 #' @param age The number of years since last fire
 #' @return dataframe
+#' @export
 
 growPlants <- function(Param, a, sp, stn, growth, age)
 {
@@ -49,7 +48,7 @@ growPlants <- function(Param, a, sp, stn, growth, age)
   # Find species growth traits
   recGrowth <- filter(growth, record == a)
   stGrowth <- filter(recGrowth, stratum == stn)
-  spGrowth <- filter(stGrowth, Species == sp)
+  spGrowth <- filter(stGrowth, species == sp)
   
   # Model growth
   height <- ifelse(!is.na(spGrowth$max),
@@ -73,11 +72,17 @@ growPlants <- function(Param, a, sp, stn, growth, age)
 
 #########################################
 
-# Updates a parameter file with the growth parameters modelled for a species
-#
-# Note: w is currently not changed due to an error:
-# "Error in .match_param(param, section, no.match.error = TRUE, single = TRUE) :
-# w matches more than one parameter"
+#' Updates a parameter file with the growth parameters modelled for a species
+#'
+#' Note: w is currently not changed due to an error:
+#' "Error in .match_param(param, section, no.match.error = TRUE, single = TRUE) :
+#' w matches more than one parameter"
+#' 
+#' @param Param Parameter file
+#' @param sp Name of the species being grown
+#' @param current dataframe produced by growPlants
+#' @return dataframe
+#' @export
 
 
 applyGrowth <- function(Param, sp, current)
@@ -99,14 +104,12 @@ applyGrowth <- function(Param, sp, current)
 
 ###################################################################################
 #' Models the weighted mean of plant separation from time since fire for a named stratum
-#' 
-#' Private function, documented for current development
 #'
 #' Checks for alternate growth models
 #' @param st The name of the stratum
 #' @param a The number of the record to be modelled
 #' @param cover A dataframe with the fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' constant - Mean plant separation (m) that does not change with age
 #' exp_a	- The first constant in an exponential function describing plant separation with tsf
 #' exp_b	- The second constant in an exponential function describing plant separation with tsf
@@ -121,6 +124,7 @@ applyGrowth <- function(Param, sp, current)
 #' openness - ratio of gap to clump size
 #' @param age The number of years since last fire
 #' @return dataframe
+#' @export
 
 coverChange <- function(st, a, cover, Flora, age)
 {
@@ -149,23 +153,22 @@ coverChange <- function(st, a, cover, Flora, age)
 ##############################################################################################
 #' Models the weight of the o_horizon from time since fire and
 #' updates param file
-#' 
-#' Private function, documented for current development
 #'
-#' Olsen negative exponential function
+#' olson negative exponential function
 #'
 #' @param base.params Parameter input table
 #' @param growth A dataframe with the six fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
 #' rate	- A constant describing the rate of growth for a Chapman Richards function
 #' @param age The number of years since last fire
 #' @return dataframe
+#' @export
 
 olson <- function(base.params, growth, age)
 {
   # Find growth curve
-  ols <- filter(growth, Species == "O_horizon")
+  ols <- filter(growth, species == "O_horizon")
   
   # Model accumulation
   oHor <- max(4, ols$max*(1-exp(-ols$rate*age)))
@@ -194,7 +197,7 @@ olson <- function(base.params, growth, age)
 #' clump - mean ratio of clump diameter to crown diameter
 #' openness - ratio of gap to clump size
 #' @param growth A dataframe with the six fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
 #' rate	- A constant describing the rate of growth for a Chapman Richards function
 #' @param default.species.params Leaf traits database
@@ -205,7 +208,7 @@ olson <- function(base.params, growth, age)
 susp <- function(base.params, a, suspNS, Flora, growth, default.species.params, age, density = 300)
 {
   # Find growth curve
-  olsS <- filter(growth, Species == suspNS)
+  olsS <- filter(growth, species == suspNS)
   
   if(count(olsS) > 0) {
     
@@ -235,11 +238,11 @@ susp <- function(base.params, a, suspNS, Flora, growth, default.species.params, 
 #' @param age The number of years since last fire
 #' @param tAge The age of trees at the commencement of the run
 #' @param growth A dataframe with the six fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
 #' rate	- A constant describing the rate of growth for a Chapman Richards function
 #' @param cover A dataframe with the fields:
-#' Species - Name of the species consistent with other tables
+#' species - Name of the species consistent with other tables
 #' constant - Mean plant separation (m) that does not change with age
 #' exp_a	- The first constant in an exponential function describing plant separation with tsf
 #' exp_b	- The second constant in an exponential function describing plant separation with tsf

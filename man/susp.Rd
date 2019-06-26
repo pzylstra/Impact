@@ -25,7 +25,7 @@ clump - mean ratio of clump diameter to crown diameter
 openness - ratio of gap to clump size}
 
 \item{growth}{A dataframe with the six fields:
-Species - Name of the species consistent with other tables
+species - Name of the species consistent with other tables
 max - Maximum plant height (m)
 rate    - A constant describing the rate of growth for a Chapman Richards function}
 
