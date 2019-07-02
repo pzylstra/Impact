@@ -61,7 +61,7 @@ probIn <- function(base.params, db.path = "out_mc.db", jitters,
       base.params <- plantVar(base.params, Strata, Species, 
                               l = leafVar, Ms = moistureSD, Pm = moistureMultiplier, Mr = moistureRange, 
                               Hs = heightSD, Hr = heightRange)
-      ffm_run(base.params, db.path,db.recreate)
+      ffm_run(base.params, db.path, db.recreate = db.recreate)
       Sys.sleep(0.25)
       ####UpdateProgress
       if (is.function(updateProgress)) {
