@@ -52,7 +52,7 @@ stratum <- function(flames, sites, ros, Surf)
            extinct = ifelse(extinct == 0.199, 0.0, 1.0)) %>%
     select(repId, level, fuelLoad, flameHeight, flameLength, flameAngle, ros, windSpeed,
            deadFuelMoistureProp, temperature, slope, extinct) %>%
-    mutate(oHorizon = fuelLoad * 10,
+    mutate(litter = fuelLoad * 10,
            slope_degrees = slope * 180 / pi,
            flameA_degrees = flameAngle * 180 / pi,
            ros_kph = extinct * ros * 3.6,

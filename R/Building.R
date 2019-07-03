@@ -31,7 +31,7 @@ siteBuilder <- function(site, Structure, a)
   site.meta$value[5] <- ifelse(Structure$m_c[a]=='t',"midstorey, canopy, overlapped",
                                ifelse(Structure$m_c[a]=='f',"midstorey, canopy, not overlapped",
                                       "midstorey, canopy, automatic"))
-  site.meta$value[6] <- site$oHorizon[a]
+  site.meta$value[6] <- site$litter[a]
   site.meta$value[7] <- 0.005
   site.meta$value[8] <- 0.00025
   site.meta$value[9] <- site$fLine[a]
@@ -194,7 +194,7 @@ unitBuilder <- function(Flora, a)
 #' wind - velocity in km/h
 #' temp - ambient temperature deg. C
 #' dfmc - moisture content of fine dead fuels in whole numbers (eg 0.1 for 10%)
-#' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
+#' litter - weight in t/ha of fine dead organic material forming the O horizon
 #' fline - the fireline length in m
 #' @param Structure A dataframe with the fields:
 #' record - a unique, consecutively numbered identifier per site

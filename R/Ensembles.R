@@ -180,7 +180,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
   S1 <- x %>%
     mutate(time = ceiling(repId/jitters),
            spread = ifelse(level == "Surface",
-                           ifelse(oHorizon >=4,spread,0),
+                           ifelse(litter >=4,spread,0),
                            spread))%>%
     group_by(repId)%>%
     select(repId, time, spread)%>%
@@ -290,7 +290,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     S1 <- x%>%
       mutate(time = ceiling(repId/jitters),
              spread = ifelse(level == "Surface",
-                             ifelse(oHorizon >=4,spread,0),
+                             ifelse(litter >=4,spread,0),
                              spread))%>%
       group_by(repId)%>%
       select(repId, time, spread)%>%
@@ -371,7 +371,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
 #' wind - velocity in km/h
 #' temp - ambient temperature deg. C
 #' dfmc - moisture content of fine dead fuels in whole numbers (eg 0.1 for 10%)
-#' oHorizon - weight in t/ha of fine dead organic material forming the O horizon
+#' litter - weight in t/ha of fine dead organic material forming the O horizon
 #' fline - the fireline length in m
 #' @param Structure A dataframe with the fields:
 #' record - a unique, consecutively numbered identifier per site
