@@ -14,7 +14,7 @@ slope - slope in degrees
 wind - velocity in km/h
 temp - ambient temperature deg. C
 dfmc - moisture content of fine dead fuels in whole numbers (eg 0.1 for 10%)
-oHorizon - weight in t/ha of fine dead organic material forming the O horizon
+litter - weight in t/ha of fine dead organic material forming the O horizon
 fline - the fireline length in m}
 
 \item{Structure}{A dataframe with the fields:
