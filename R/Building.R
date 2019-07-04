@@ -242,6 +242,7 @@ paramBuilder <- function(site, Structure, Flora, default.species.params, a)
     param <- ffm_set_stratum_param(param, stNum, "plantSeparation", 
                                    pmax(sep$value[2],ww$mw[stNum]))
     
+  }
     # Change species param leafForm to characters
     default.species.params$leafForm <- as.character(default.species.params$leafForm)
     
@@ -249,5 +250,4 @@ paramBuilder <- function(site, Structure, Flora, default.species.params, a)
     param <- ffm_complete_params(param,default.species.params)
     
     return(param)
-  }
 }
