@@ -176,7 +176,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     mutate(time = ceiling(repId/jitters))
   IP <- repFlame(res$IgnitionPaths)
 
-  # Find spread a: likelihood of fire spread
+  # Limit fire spread to litter >= 4t/ha, find max of all strata
   S1 <- x %>%
     mutate(time = ceiling(repId/jitters),
            spread = ifelse(level == "Surface",
@@ -186,7 +186,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     select(repId, time, spread)%>%
     summarise_all(max)
 
-  # Find spread b: likelihood of crown loss
+  # Find likelihood of crown loss
   runsB <- runs%>%
     right_join(S1)%>%
     mutate(lengthSurface = lengthSurface * spread,
@@ -205,14 +205,14 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
            sc2 = ifelse(sc2>=hKill, 1, 0),
            sc3 = ifelse(sc3>=hKill, 1, 0),
            sc4 = ifelse(sc4>=hKill, 1, 0))%>%
-    group_by(time)%>%
-    select(time, age, Height, b1, b2, b3, b4, sc1, sc2, sc3, sc4)%>%
-    summarise_all(mean)
+#    group_by(time)%>%
+    select(time, age, Height, b1, b2, b3, b4, sc1, sc2, sc3, sc4)#%>%
+#    summarise_all(mean)
 
   S1 <- S1%>%
-    group_by(time)%>%
-    select(time, spread)%>%
-    summarise_all(mean)
+#    group_by(time)%>%
+    select(time, spread)#%>%
+#    summarise_all(mean)
 
   Likelihood <- left_join(S1,S2)%>%
     mutate(Height = Height * spread,
@@ -229,8 +229,8 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
   Times <- runs %>%
     select(repId, time, fh, fl, ros_kph,
            wind_kph, deadFuelMoistureProp, temperature, slope_degrees) %>%
-    group_by(time) %>%
-    summarize_all(mean) %>%
+#    group_by(time) %>%
+#    summarize_all(mean) %>%
     right_join(Likelihood) %>%
     mutate(fh = fh * spread,
            fl = fl * spread,
@@ -315,14 +315,14 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
              sc2 = ifelse(sc2>=hKill, 1, 0),
              sc3 = ifelse(sc3>=hKill, 1, 0),
              sc4 = ifelse(sc4>=hKill, 1, 0))%>%
-      group_by(time)%>%
-      select(time, age, Height, b1, b2, b3, b4, sc1, sc2, sc3, sc4)%>%
-      summarise_all(mean)
+#      group_by(time)%>%
+      select(time, age, Height, b1, b2, b3, b4, sc1, sc2, sc3, sc4)#%>%
+#      summarise_all(mean)
 
     S1 <- S1%>%
-      group_by(time)%>%
-      select(time, spread)%>%
-      summarise_all(mean)
+#      group_by(time)%>%
+      select(time, spread)#%>%
+#      summarise_all(mean)
 
     Likelihood <- left_join(S1,S2)%>%
       mutate(Height = Height * spread,
@@ -339,8 +339,8 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     Times1 <- runs %>%
       select(repId, time, fh, fl, ros_kph,
              wind_kph, deadFuelMoistureProp, temperature, slope_degrees) %>%
-      group_by(time) %>%
-      summarize_all(mean) %>%
+#      group_by(time) %>%
+#      summarize_all(mean) %>%
       right_join(Likelihood) %>%
       mutate(fh = fh * spread,
              fl = fl * spread,
