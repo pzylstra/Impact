@@ -178,37 +178,38 @@ olson <- function(base.params, growth, age)
 }
 
 ########################################################################################
-#' Models the packing of materials in a suspended layer
-#' 
-#' Private function, documented for current development
-#'
-#' Based on a negative exponential function;updates base.params
-#'
-#' @param base.params Parameter input table
-#' @param a The number of the record to be modelled
-#' @param suspNS Name of the fuel in the suspended layer
-#' @param Flora A dataframe with the fields:
-#' record - a unique, consecutively numbered identifier per site
-#' species - the name of the species, which will call trait data from 'default.species.params'
-#' moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
-#' stratum - numeric value from 1 to 4, counting from lowest stratum
-#' comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
-#' base, he, ht, top & w - canopy dimensions for that species (m). he and ht are optional
-#' clump - mean ratio of clump diameter to crown diameter
-#' openness - ratio of gap to clump size
-#' @param growth A dataframe with the six fields:
-#' species - Name of the species consistent with other tables
-#' max - Maximum plant height (m)
-#' rate	- A constant describing the rate of growth for a Chapman Richards function
-#' @param default.species.params Leaf traits database
-#' @param age The number of years since last fire
-#' @param density Wood density (kg/m3)
-#' @return dataframe
+# Models the packing of materials in a suspended layer
+# 
+# Private function, documented for current development
+#
+# Based on a negative exponential function;updates base.params
+#
+# @param base.params Parameter input table
+# @param a The number of the record to be modelled
+# @param suspNS Name of the fuel in the suspended layer
+# @param Flora A dataframe with the fields:
+# record - a unique, consecutively numbered identifier per site
+# species - the name of the species, which will call trait data from 'default.species.params'
+# moisture - the moisture content of the species in whole numbers (eg 1 for 100% ODW)
+# stratum - numeric value from 1 to 4, counting from lowest stratum
+# comp - % composition or count of that species in the stratum. If absent, all species will be considered equally
+# base, he, ht, top & w - canopy dimensions for that species (m). he and ht are optional
+# clump - mean ratio of clump diameter to crown diameter
+# openness - ratio of gap to clump size
+# @param growth A dataframe with the six fields:
+# species - Name of the species consistent with other tables
+# max - Maximum plant height (m)
+# rate	- A constant describing the rate of growth for a Chapman Richards function
+# @param default.species.params Leaf traits database
+# @param age The number of years since last fire
+# @param density Wood density (kg/m3)
+# @return dataframe
 
-susp <- function(base.params, a, suspNS, Flora, growth, default.species.params, age, density = 300)
+susp <- function(base.params, a, suspNS = "suspNS", Flora, growth, default.species.params, age, density = 300)
 {
   # Find growth curve
-  olsS <- filter(growth, species == suspNS)
+  growthN <- filter(growth, record == a)
+  olsS <- filter(growthN, species == suspNS)
   
   if(count(olsS) > 0) {
     

@@ -119,7 +119,7 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' @export
 
 fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5, ageStep = 5, firstAge = 1, steps = 10, tAge = 50, l = 0.1,
-                         default.species.params = default.species.params, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41, a, suspNS,
+                         default.species.params = default.species.params, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41, a, suspNS = "suspNS",
                          density = 300, test = 80, hKill = 90,updateProgress = NULL)
 {
   age <- firstAge
@@ -138,7 +138,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
 
   # Structure of suspended dead material
   if(suspNS != ""){
-    base.params <- susp(base.params, a, suspNS, Flora, growth,
+    base.params <- susp(base.params, a, suspNS = "suspNS", Flora, growth,
                         default.species.params, age, density = density)
   }
 
