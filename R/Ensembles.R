@@ -132,13 +132,14 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
   nCanopy <- subset(nTable, stratum==nSt)
   nCsp <- as.numeric(count(nCanopy))
   nLow <- nSp-nCsp
+  susPres <- dplyr::filter(nTable, value == suspNS)
 
   # Weight of the O-horizon
   base.params <- olson(base.params, growth, age)
 
   # Structure of suspended dead material
-  if(suspNS != ""){
-    base.params <- susp(base.params, a, suspNS = "suspNS", Flora, growth,
+  if(susPres$value[1] == suspNS){
+    base.params <- susp(base.params, a, suspNS = suspNS, Flora, growth,
                         default.species.params, age, density = density)
   }
 
@@ -247,7 +248,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     base.params <- olson(base.params, growth, age)
 
     # Structure of suspended dead material
-    if(suspNS != ""){
+    if(susPres$value[1] == suspNS){
       base.params <- susp(base.params, a, suspNS, Flora, growth,
                           default.species.params, age, density = density)
     }
