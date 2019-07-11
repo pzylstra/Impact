@@ -27,7 +27,13 @@ openness - ratio of gap to clump size}
 \item{growth}{A dataframe with the six fields:
 species - Name of the species consistent with other tables
 max - Maximum plant height (m)
-rate    - A constant describing the rate of growth for a Chapman Richards function}
+rate    - A constant describing the rate of growth for a Chapman Richards function
+aQ - First constant in a quadratic equation
+bQ - Second constant in a quadratic equation
+cQ - Third constant in a quadratic equation
+aLin - First constant in a linear equation
+bLin - Second constant in a linear equation
+Function prioritises growth equations from left to right}
 
 \item{default.species.params}{Leaf traits database}
 
