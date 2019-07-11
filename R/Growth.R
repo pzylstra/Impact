@@ -199,6 +199,12 @@ olson <- function(base.params, growth, age)
 #' species - Name of the species consistent with other tables
 #' max - Maximum plant height (m)
 #' rate	- A constant describing the rate of growth for a Chapman Richards function
+#' aQ - First constant in a quadratic equation
+#' bQ - Second constant in a quadratic equation
+#' cQ - Third constant in a quadratic equation
+#' aLin - First constant in a linear equation
+#' bLin - Second constant in a linear equation
+#' Function prioritises growth equations from left to right
 #' @param default.species.params Leaf traits database
 #' @param age The number of years since last fire
 #' @param density Wood density (kg/m3)
@@ -209,9 +215,9 @@ susp <- function(base.params, a, suspNS = "suspNS", Flora, growth, default.speci
 {
   # Find growth curve
   growthN <- filter(growth, record == a)
-  olsS <- filter(growthN, species == suspNS)
+  NS <- filter(growthN, species == suspNS)
   
-  if(count(olsS) > 0) {
+  if(count(NS) > 0) {
     
     FloraR <- filter(Flora, record == a)
     olsF <- filter(FloraR, species == suspNS)
@@ -219,7 +225,15 @@ susp <- function(base.params, a, suspNS = "suspNS", Flora, growth, default.speci
     spN <- filter(base.params, value == suspNS)
     
     # Model packing
-    suspNS <- olsS$max*(1-exp(-olsS$rate*age))
+    suspNS <- if (!is.na(NS$max)) {
+      NS$max*(1-exp(-NS$rate*age))
+    } else if (!is.na(NS$aQ)) {
+      pmax(0.1,(NS$aQ * age^2 + NS$bQ * age + NS$cQ))
+    } else if (!is.na(NS$aLin)) {
+      NS$aLin*age+NS$bLin
+    } else {
+      0.1
+    }
     lengthS <- (0.6*((0.1 * suspNS) / (olsF$top * density))) / (pi * (olsT$leafThickness/2)^2)
     sepS <- mean(sqrt(sqrt(olsF$top/lengthS)^2*2),sqrt(olsF$top/lengthS))
     
