@@ -117,31 +117,34 @@ drivers <- function(base.params, db.path = "out_mc.db", jitters, windMin, windRe
   
   #Dataframe of orthogonal combinations
   dat <- expand.grid(slope = slopes, DFMC = DFMCs, wind = winds)
-  Niter <- nrow(dat)
+  Niter <- nrow(dat) * jitters
   
   #Loop through combinations
   pbar <- txtProgressBar(max = Niter, style = 3)
   for (i in 1:Niter) {
+    set <- ceiling(i / jitters)
     db.recreate <- i == 1
-    s <- dat[i, "slope"]
-    d <- dat[i, "DFMC"]
-    w <- dat[i, "wind"]
+    s <- dat[set, "slope"]
+    d <- dat[set, "DFMC"]
+    w <- dat[set, "wind"]
     
-    #Update environmental parameters
-    base.params <- base.params %>%
-      ffm_set_site_param("slope", s, "deg") %>%
-      ffm_set_site_param("temperature", 30) %>%
-      ffm_set_site_param("deadFuelMoistureProp", d) %>%
-      ffm_set_site_param("windSpeed", w)
-    
-    for (j in 1:jitters) {
-      #Randomise plant parameters
-      base.params <- plantVar(base.params, Strata, Species, l = leafVar, Ms = moistureSD, 
-                              Pm = moistureMultiplier, Mr = moistureRange, 
-                              Hs = heightSD, Hr = heightRange)
-      ffm_run(base.params, db.path, db.recreate)
-      
+    #Update environmental parameters if on a new row
+    if (set > ceiling((i-1) / jitters)) {
+      base.params <- base.params %>%
+        ffm_set_site_param("slope", s, "deg") %>%
+        ffm_set_site_param("temperature", 30) %>%
+        ffm_set_site_param("deadFuelMoistureProp", d) %>%
+        ffm_set_site_param("windSpeed", w)
     }
+    
+    #  for (j in 1:jitters) {
+    #Randomise plant parameters
+    base.params <- plantVar(base.params, Strata, Species, l = leafVar, Ms = moistureSD, 
+                            Pm = moistureMultiplier, Mr = moistureRange, 
+                            Hs = heightSD, Hr = heightRange)
+    ffm_run(base.params, db.path, db.recreate = db.recreate)
+    
+    #  }
     Sys.sleep(0.25)
     ####UpdateProgress
     if (is.function(updateProgress)) {
