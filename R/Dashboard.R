@@ -24,7 +24,7 @@
 #' @return dataframe
 #' @export
 
-probIn <- function(base.params, db.path = "out_mc.db", jitters,
+probFire <- function(base.params, db.path = "out_mc.db", jitters,
                    slope, slopeSD, slopeRange, temp, tempSD, tempRange,
                    DFMC, DFMCSD, DFMCRange, wind, windSD, windRange,
                    moistureMultiplier, moistureSD, moistureRange,
