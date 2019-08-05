@@ -513,8 +513,8 @@ plantVar <- function (base.params, Strata, Species,
         ffm_set_species_param(si, SpeciesP, "hp", peak) %>%
         ffm_set_species_param(si, SpeciesP, "ht", peak * Species$htR[SpeciesP]) %>%
         ffm_set_species_param(si, SpeciesP, "he", peak * Species$heR[SpeciesP]) %>%
-        ffm_set_species_param(si, SpeciesP, "hc", peak *
-                                Species$hcR[SpeciesP])
+        ffm_set_species_param(si, SpeciesP, "hc", peak *Species$hcR[SpeciesP]) %>%
+        ffm_set_species_param(si, SpeciesP, "w", peak * Species$wR[SpeciesP])
       SpeciesP = SpeciesP + 1
     }
   }

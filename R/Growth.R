@@ -95,7 +95,7 @@ applyGrowth <- function(Param, sp, current)
   Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "ht", current$ht)
   Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "he", current$he)
   Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "hc", current$hc)
-  #  Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "w", current$w)
+  Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "w", current$w)
   Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "clumpDiameter", current$clumpDiameter)
   Param <- ffm_set_species_param(Param, stratumN, SpeciesN, "clumpSeparation", current$clumpSeparation)
   
