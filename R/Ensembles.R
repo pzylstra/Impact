@@ -248,7 +248,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     base.params <- olson(base.params, growth, age)
 
     # Structure of suspended dead material
-    if(susPres$value[1] == suspNS){
+    if(!is.na(susPres$value[1])){
       base.params <- susp(base.params, a, suspNS, Flora, growth,
                           default.species.params, age, density = density)
     }
