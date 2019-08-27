@@ -517,7 +517,7 @@ kSoil <- function(texture="loam", saturation=0.3, grain="fine", unfrozen=1)
   #Dry density (kg/m3)
   densityD <- (1-porosity)*2700
   # Dry thermal conductivity
-  kDry <- (0.135*densityD+64.7)/(2700-0.947*densityD)
+  kDry <- (0.137*densityD+64.7)/(2700-0.947*densityD)
   # Solids thermal conductivity
   kS <- 7.7^quartz*minerals^(1-quartz)
   # Saturated thermal conductivity
