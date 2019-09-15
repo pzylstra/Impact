@@ -473,6 +473,12 @@ fireSet <- function(site, Structure, Flora, traits = default.species.params)
 #####################################################################
 
 #' Randomly modifies plant traits within defined ranges for non-deterministic predictions
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Hs Standard deviation of plant height variations
+#' @param Hr Truncates plant height variability by +/- Hr * height
 #' @return dataframe
 #' @export
 
