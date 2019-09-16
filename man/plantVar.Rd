@@ -7,6 +7,19 @@
 plantVar(base.params, Strata, Species, l = 0.1, Ms = 0.01, Pm = 1,
   Mr = 1.001, Hs = 0.2, Hr = 1.41)
 }
+\arguments{
+\item{l}{Variation around input leaf dimensions}
+
+\item{Ms}{Standard deviation of LFMC}
+
+\item{Pm}{Multiplier of mean LFMC}
+
+\item{Mr}{Truncates LFMC variability by +/- Pm * LFMC}
+
+\item{Hs}{Standard deviation of plant height variations}
+
+\item{Hr}{Truncates plant height variability by +/- Hr * height}
+}
 \value{
 dataframe
 }
