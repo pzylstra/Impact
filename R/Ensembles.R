@@ -527,3 +527,81 @@ plantVar <- function (base.params, Strata, Species,
   
   return(tbl)
 }
+
+#####################################################################
+
+#' Randomly modifies plant traits within defined ranges for non-deterministic predictions
+#' Differs from plantVar by modifying individual species by their own rules
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Hs Standard deviation of plant height variations
+#' @param Hr Truncates plant height variability by +/- Hr * height
+#' @param Variation A database of plant variability in traits, with the fields:
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'default.species.params'
+#' stratum - numeric value from 1 to 4, counting from lowest stratum
+#' Ms - Standard deviation of LFMC
+#' Mr - Truncates LFMC variability by +/- Pm * LFMC
+#' Hs - Standard deviation of plant height variations
+#' Hr - Truncates plant height variability by +/- Hr * height
+#' @return dataframe
+#' @export
+
+plantVarS <- function (base.params, Strata, Species, Variation, l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001)
+{
+  
+  tbl <- base.params
+  # Vary leaf traits
+  tbl <- ffm_param_variance(tbl, max.prop = l, method = "uniform")
+  SpeciesN <- 1
+  SpeciesP <- 1
+  
+  
+  # Loop through plant strata
+  
+  StN <- as.numeric(count(Strata))
+  
+  for (si in 1:StN) {
+    
+    # Vary leaf moisture to randomly place points in the community and decide which plants will be present.
+    # Where the random number is > stratum cover, all species are made too moist to burn and excluded from modelling.
+    # Otherwise, species are varied by Ms & Mr, and multiplied by Pm
+    
+    if (runif(1) <= Strata$cover[si]) {
+      for (t in 1:Strata$speciesN[si]) {
+        Mrand <- Pm * rtnorm(n = 1, mean = Species$lfmc[SpeciesN],
+                             sd = Ms, a = Species$lfmc[SpeciesN]/Mr, b = Species$lfmc[SpeciesN] * Mr)
+        tbl <- tbl %>% ffm_set_species_param(si, SpeciesN,
+                                             "liveLeafMoisture", Mrand)
+        (SpeciesN = SpeciesN + 1)
+      }
+    }
+    else {
+      for (f in 1:Strata$speciesN[si]) {
+        tbl <- tbl %>% ffm_set_species_param(si, SpeciesN,
+                                             "liveLeafMoisture", 100)
+        SpeciesN = SpeciesN + 1
+      }
+    }
+    
+    # Modify plant dimansions for each species within the stratum
+    
+    for (p in 1:Strata$speciesN[si]) {
+      Hr <- Variation$Hr[SpeciesP]
+      peak <- rtnorm(n = 1, mean = Species$hp[SpeciesP],
+                     sd = Variation$Hs[SpeciesP], a = Species$hp[SpeciesP]/Hr, b = Species$hp[SpeciesP] *
+                       Hr)
+      tbl <- tbl %>%
+        ffm_set_species_param(si, SpeciesP, "hp", peak) %>%
+        ffm_set_species_param(si, SpeciesP, "ht", peak * Species$htR[SpeciesP]) %>%
+        ffm_set_species_param(si, SpeciesP, "he", peak * Species$heR[SpeciesP]) %>%
+        ffm_set_species_param(si, SpeciesP, "hc", peak *Species$hcR[SpeciesP]) %>%
+        ffm_set_species_param(si, SpeciesP, "w", peak * Species$wR[SpeciesP])
+      SpeciesP = SpeciesP + 1
+    }
+  }
+  
+  return(tbl)
+}
