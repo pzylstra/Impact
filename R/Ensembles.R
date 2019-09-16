@@ -549,6 +549,9 @@ fireSet <- function(site, Structure, Flora, traits = default.species.params)
 #####################################################################
 
 #' Randomly modifies plant traits within defined ranges for non-deterministic predictions
+#' @param base.params Parameter input table
+#' @param Strata Strata descriptor table output by the function 'strata'
+#' @param Species Species descriptor table output by the function 'species'
 #' @param l Variation around input leaf dimensions
 #' @param Ms Standard deviation of LFMC
 #' @param Pm Multiplier of mean LFMC
@@ -608,6 +611,9 @@ plantVar <- function (base.params, Strata, Species,
 
 #' Randomly modifies plant traits within defined ranges for non-deterministic predictions
 #' Differs from plantVar by modifying individual species by their own rules
+#' @param base.params Parameter input table
+#' @param Strata Strata descriptor table output by the function 'strata'
+#' @param Species Species descriptor table output by the function 'species'
 #' @param l Variation around input leaf dimensions
 #' @param Ms Standard deviation of LFMC
 #' @param Pm Multiplier of mean LFMC
