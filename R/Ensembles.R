@@ -94,7 +94,7 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' @return dataframe
 #' @export
 
-weatherSetS <- function(base.params, weather, Variation, db.path = "out_mc.db", jitters = 10, l = 0.1,
+weatherSetS(base.params, weather, Variation, db.path = "out_mc.db", jitters = 10, l = 0.1,
                        Ms = 0.01, Pm = 1, Mr = 1.001, updateProgress = NULL)
 {
   
