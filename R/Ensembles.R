@@ -67,6 +67,82 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
   cat("Finished.  Output written to", db.path)
 }
 #######################################################################
+
+#' Updates parameter files with weather from a dataset,
+#' then models fire from non-deterministic plant parameters
+#' using plantVarS to modify individual species with their own measured veriability
+#'
+#' @param base.params Parameter input table
+#' @param weather A dataframe with the four fields:
+#' tm - Sequential numbering of the records
+#' T - Air temperature (deg C)
+#' W - Wind velocity (km/h)
+#' DFMC - Dead fuel moisture content (proportion ODW)
+#' @param db.path Name of the exported database
+#' @param jitters Number of repetitions
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Variation A database of plant variability in traits, with the fields:
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'default.species.params'
+#' stratum - numeric value from 1 to 4, counting from lowest stratum
+#' Hs - Standard deviation of plant height variations
+#' Hr - Truncates plant height variability by +/- Hr * height
+#' @param updateProgress Progress bar for use in the dashboard
+#' @return dataframe
+#' @export
+
+weatherSetS <- function(base.params, weather, Variation, db.path = "out_mc.db", jitters = 10, l = 0.1,
+                       Ms = 0.01, Pm = 1, Mr = 1.001, updateProgress = NULL)
+{
+  
+  # Run the model, updating the base parameter table
+  # with MC values at each iteration
+  
+  pbar <- txtProgressBar(max = max(weather$tm), style = 3)
+  for (i in 1:max(weather$tm)) {
+    ## Create database and delete the last part
+    db.recreate <- i == 1
+    
+    # Read weather values from the table
+    
+    w <- weather$W[[i]]
+    t <- weather$T[[i]]
+    d <- max(0.01,min(0.199,weather$DFMC[[i]]))
+    
+    # Update parameter table
+    tbl <- base.params %>%
+      ffm_set_site_param("windSpeed", w, "km/h") %>%
+      ffm_set_site_param("temperature", t, "degc") %>%
+      ffm_set_site_param("deadFuelMoistureProp", d)
+    
+    Strata <- strata(base.params)
+    Species <- species(base.params)
+    
+    if (jitters > 0) {
+      for (j in 1:jitters) {
+        tbl <- plantVarS(tbl, Strata, Species, Variation, l = l,
+                        Ms = Ms, Pm = Pm, Mr = Mr)
+        # Run the model
+        ffm_run(tbl, db.path, db.recreate = db.recreate)
+      }
+    }
+    Sys.sleep(0.25)
+    ####UpdateProgress
+    if (is.function(updateProgress)) {
+      text <- paste0("Number of remaining steps is ",max(weather$tm) - i )
+      updateProgress(detail = text)
+    }
+    setTxtProgressBar(pbar, i)
+  }
+  
+  
+  cat("Finished.  Output written to", db.path)
+}
+#######################################################################
+
 #' Models flammability dynamics from a weather set
 #'
 #' Grows the plant community,
@@ -536,14 +612,10 @@ plantVar <- function (base.params, Strata, Species,
 #' @param Ms Standard deviation of LFMC
 #' @param Pm Multiplier of mean LFMC
 #' @param Mr Truncates LFMC variability by +/- Pm * LFMC
-#' @param Hs Standard deviation of plant height variations
-#' @param Hr Truncates plant height variability by +/- Hr * height
 #' @param Variation A database of plant variability in traits, with the fields:
 #' record - a unique, consecutively numbered identifier per site
 #' species - the name of the species, which will call trait data from 'default.species.params'
 #' stratum - numeric value from 1 to 4, counting from lowest stratum
-#' Ms - Standard deviation of LFMC
-#' Mr - Truncates LFMC variability by +/- Pm * LFMC
 #' Hs - Standard deviation of plant height variations
 #' Hr - Truncates plant height variability by +/- Hr * height
 #' @return dataframe
