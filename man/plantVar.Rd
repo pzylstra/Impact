@@ -8,6 +8,12 @@ plantVar(base.params, Strata, Species, l = 0.1, Ms = 0.01, Pm = 1,
   Mr = 1.001, Hs = 0.2, Hr = 1.41)
 }
 \arguments{
+\item{base.params}{Parameter input table}
+
+\item{Strata}{Strata descriptor table output by the function 'strata'}
+
+\item{Species}{Species descriptor table output by the function 'species'}
+
 \item{l}{Variation around input leaf dimensions}
 
 \item{Ms}{Standard deviation of LFMC}
