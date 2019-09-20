@@ -76,3 +76,59 @@ LAIp <- function(base.params, sp = 1, yu = 100, yl = 0)
 }
 
 #####################################################################
+
+#' Finds the LAI for a horizontal slice of a community
+#'
+#' @param base.params A parameter file
+#' @param yu The upper height of the horizontal slice (m)
+#' @param yl The lower height of the horizontal slice (m)
+#' @return Numeric value
+#' @export
+
+LAI <- function(base.params, yu = 100, yl = 0)
+{
+  # Collect plant figures
+  l <- data.frame()
+  c <- data.frame()
+  s <- data.frame()
+  w <- data.frame()
+  N <- count(species(base.params))
+  str <- strata(base.params)
+  n <- 1
+  while(n <= N[1]) {
+    spPar <- subset(base.params, species == n)
+    laiN <- LAIp(base.params, sp = n, yu = yu, yl = yl)
+    l <- rbind(l,laiN)
+    c <- rbind(c,as.numeric(spPar$value[spPar$param == "composition"]))
+    s <- rbind(s, as.numeric(str$separation[as.numeric(spPar$stratum[1])]))
+    w <- rbind(w,as.numeric(spPar$value[spPar$param == "w"]))
+    n <- n + 1
+  }
+  
+  # Construct table
+  colnames(l) <- c("LAIp")
+  l$ID <- seq.int(nrow(l))
+  colnames(c) <- c("Weight")
+  c$ID <- seq.int(nrow(c))
+  colnames(s) <- c("Separation")
+  s$ID <- seq.int(nrow(s))
+  colnames(w) <- c("Width")
+  w$ID <- seq.int(nrow(w))
+  LAIplant <- left_join(l,c)%>%
+    left_join(s)%>%
+    mutate(Weight = ifelse(LAIp>0,
+                           Weight,
+                           0))%>%
+    left_join(w)
+  
+  # Calculate LAI
+  all <- sum(LAIplant$Weight)
+  LAIplant <- LAIplant %>% 
+    mutate(Weight = Weight/all,
+           Cover = (Width^2/Separation^2)*Weight,
+           LAIw = LAIp*Cover)
+  LAI <- sum(LAIplant$LAIw)
+  return(LAI)
+}
+
+#####################################################################
