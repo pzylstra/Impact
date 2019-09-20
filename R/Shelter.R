@@ -1,13 +1,13 @@
-#' Finds the LAI for a plant above a height threshold
+#' Finds the LAI for a horizontal slice of a plant
 #'
 #' @param base.params A parameter file
 #' @param Sp The number of the species in the parameter file
-#' @param y The height above which the LAI will be measured (m)
+#' @param yu The upper height of the horizontal slice (m)
+#' @param yl The lower height of the horizontal slice (m)
 #' @return Numeric value
 #' @export
 
-
-LAIp <- function(base.params, sp = 1, y = 0)
+LAIp <- function(base.params, sp = 1, yu = 100, yl = 0)
 {
   # Subset species
   spPar <- subset(base.params, species == sp)
@@ -16,44 +16,63 @@ LAIp <- function(base.params, sp = 1, y = 0)
   Cd <- as.numeric(spPar$value[spPar$param == "clumpDiameter"])
   Cs <- as.numeric(spPar$value[spPar$param == "clumpSeparation"])
   ram <- as.numeric(spPar$value[spPar$param == "stemOrder"])
-  comp <- as.numeric(spPar$value[spPar$param == "composition"])
-  hc <- max(y, as.numeric(spPar$value[spPar$param == "hc"]))
-  he <- max(y, as.numeric(spPar$value[spPar$param == "he"]))
-  ht <- max(y, as.numeric(spPar$value[spPar$param == "ht"]))
-  hp <- max(y, as.numeric(spPar$value[spPar$param == "hp"]))
+  #  hc <- min(yu,max(yl, as.numeric(spPar$value[spPar$param == "hc"])))
+  hc <- as.numeric(spPar$value[spPar$param == "hc"])
+  #  he <- min(yu,max(yl, as.numeric(spPar$value[spPar$param == "he"])))
+  he <- as.numeric(spPar$value[spPar$param == "he"])
+  #  ht <- min(yu,max(yl, as.numeric(spPar$value[spPar$param == "ht"])))
+  ht <- as.numeric(spPar$value[spPar$param == "ht"])
+  #  hp <- min(yu,max(yl, as.numeric(spPar$value[spPar$param == "hp"])))
+  hp <- as.numeric(spPar$value[spPar$param == "hp"])
   W <- as.numeric(spPar$value[spPar$param == "w"])
   ll <- as.numeric(spPar$value[spPar$param == "leafLength"])
   lw <- as.numeric(spPar$value[spPar$param == "leafWidth"])
   ls <- as.numeric(spPar$value[spPar$param == "leafSeparation"])
   
   # Find w at cutoff cones
-  topRise <- abs(as.numeric(spPar$value[spPar$param == "hp"])-as.numeric(spPar$value[spPar$param == "ht"]))
-  w <- ifelse(topRise==0,
-              W,
-              (W/topRise)*abs(hp-ht))
-  
-  baseFall <- abs(as.numeric(spPar$value[spPar$param == "he"])-as.numeric(spPar$value[spPar$param == "hc"]))
-  wl <- ifelse(baseFall==0,
+  topRise <- abs(hp-ht)
+  baseFall <- abs(he-hc)
+  # Top of slice, plant top
+  wa <- ifelse(topRise==0,
                W,
-               (W/baseFall)*abs(he-hc))
+               (W/topRise)*max(0,(hp-max(ht,yu))))
+  # Base of slice, plant top
+  wb <- ifelse(topRise==0,
+               W,
+               (W/topRise)*abs(hp-max(yl,ht)))
+  # Top of slice, plant base
+  wc <- ifelse(baseFall==0,
+               W,
+               (W/baseFall)*abs(min(he,yu)-hc))
+  # Base of slice, plant base
+  wd <- ifelse(baseFall==0,
+               W,
+               (W/baseFall)*max(0,(min(he,yl)-hc)))
   
   # Leaf area per clump
   clumpLeaves <- 0.88*(Cd*ram/ls)^1.18
   laClump <- (ll*lw/2) * clumpLeaves
   
-  # Plant volume above height y
-  upper <- ((hp-ht)*(pi*(w/2)^2))/3
-  centre <- (ht-he)*(pi*(w/2)^2)
-  lower <- ((he-hc)*(pi*(wl/2)^2))/3 
+  # Plant volume in slice
+  upperAboveSlice <- max(0,(hp-yu)*(pi*(wa/2)^2))/3
+  upperFull <- ((hp-max(yl,ht))*(pi*(wb/2)^2))/3
+  upper <- upperFull-upperAboveSlice
+  centre <- (min(yu,ht)-max(yl,he))*(pi*(W/2)^2)
+  lowerFull <- ((min(yu,he)-hc)*(pi*(wc/2)^2))/3
+  lowerBelowSlice <- (max(0,(yl-hc))*(pi*(wd/2)^2))/3 
+  lower <- lowerFull-lowerBelowSlice
   vol <- upper+centre+lower
   
-  # Clumps above height y
+  # Clumps in slice
   volC <- ((4/3)*pi*((Cd+Cs)/2)^3)
   nClumps <- vol/volC
   
-  #LAI per plant above height y
+  #LAI per plant in slice
   LA <- laClump * nClumps
-  return(LA/(pi*(w/2)^2))
+  l<- ifelse(max(wa,wb,wc,wd)==0,
+             0,
+             LA/(pi*(max(wa,wb,wc,wd)/2)^2))
+  return(l)
 }
 
 #####################################################################
