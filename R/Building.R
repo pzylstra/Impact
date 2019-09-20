@@ -229,7 +229,7 @@ paramBuilder <- function(site, Structure, Flora, default.species.params, a)
   names(components) <- c("site.meta", "strata.meta", "species.values", "species.units")
   param <- ffm_assemble_table(components)
   
-  # Adjust sep to width
+  # Find weighted mean of crown widths per stratum
   species.values$weightedW <- species.values$composition * species.values$w
   ww <- species.values%>%
     select(stratum, composition, weightedW)%>%
@@ -237,12 +237,13 @@ paramBuilder <- function(site, Structure, Flora, default.species.params, a)
     summarize_all(sum) %>%
     mutate(mw = weightedW/composition)
   
+  # Ensure separation is greater than weighted mean of crown widths
   for (stNum in 1:max(ww$stratum)) {
     sep <- filter(strata.meta, stratum == stNum)
     param <- ffm_set_stratum_param(param, stNum, "plantSeparation", 
-                                   pmax(sep$value[2],ww$mw[stNum]))
-    
+                                   pmax(as.numeric(sep$value[2]),ww$mw[stNum]))
   }
+  
     # Change species param leafForm to characters
     default.species.params$leafForm <- as.character(default.species.params$leafForm)
     
