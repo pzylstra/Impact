@@ -183,3 +183,43 @@ return(wind)
 }
 
 #####################################################################
+
+#' Calculates a non-deterministic wind profile
+#'
+#' @param base.params Parameter input table
+#' @param reps Number of repetitions
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Variation A database of plant variability in traits, with the fields:
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'default.species.params'
+#' stratum - numeric value from 1 to 4, counting from lowest stratum
+#' Hs - Standard deviation of plant height variations
+#' Hr - Truncates plant height variability by +/- Hr * height
+#' @return dataframe
+#' @export
+
+windProfile <- function(base.params, Variation, reps = 10, slices = 10, l = 0.1,
+                        Ms = 0.01, Pm = 1, Mr = 1.001)
+{
+  Strata <- strata(base.params)
+  Species <- species(base.params)
+  profW <- data.frame()
+  
+  if (reps > 0) {
+    for (j in 1:reps) {
+      base.params <- plantVarS(base.params, Strata, Species, Variation, l = l,
+                               Ms = Ms, Pm = Pm, Mr = Mr)
+      prof <- profileDet(base.params, slices = slices)
+      profW <- rbind(profW, prof)
+    }
+  }
+}
+profW  <- profW[complete.cases(profW), ]
+  return(profW)
+}
+
+
+#####################################################################
