@@ -216,8 +216,7 @@ windProfile <- function(base.params, Variation, reps = 10, slices = 10, l = 0.1,
       profW <- rbind(profW, prof)
     }
   }
-}
-profW  <- profW[complete.cases(profW), ]
+  profW  <- profW[complete.cases(profW), ]
   return(profW)
 }
 
