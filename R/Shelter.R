@@ -212,7 +212,8 @@ windProfile <- function(base.params, Variation, reps = 10, slices = 10, l = 0.1,
     for (j in 1:reps) {
       base.params <- plantVarS(base.params, Strata, Species, Variation, l = l,
                                Ms = Ms, Pm = Pm, Mr = Mr)
-      prof <- profileDet(base.params, slices = slices)
+      prof <- profileDet(base.params, slices = slices)%>%
+        mutate(run = j)
       profW <- rbind(profW, prof)
     }
   }
