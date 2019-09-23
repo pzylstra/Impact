@@ -59,11 +59,11 @@ LAIp <- function(base.params, sp = 1, yu = 100, yl = 0)
     # Plant volume in slice
     upperAboveSlice <- max(0,(hp-max(ht,yu))*(pi*(wa/2)^2))/3
     upperFull <- ((hp-max(yl,ht))*(pi*(wb/2)^2))/3
-    upper <- upperFull-upperAboveSlice
-    centre <- (min(yu,ht)-max(yl,he))*(pi*(W/2)^2)
+    upper <- max(0,upperFull-upperAboveSlice)
+    centre <- max(0,(min(yu,ht)-max(yl,he)))*(pi*(W/2)^2)
     lowerFull <- ((min(yu,he)-hc)*(pi*(wc/2)^2))/3
     lowerBelowSlice <- (max(0,(min(he,yl)-hc))*(pi*(wd/2)^2))/3
-    lower <- lowerFull-lowerBelowSlice
+    lower <- max(0,lowerFull-lowerBelowSlice)
     vol <- upper+centre+lower
     
     # Clumps in slice
