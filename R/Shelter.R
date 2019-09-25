@@ -133,6 +133,7 @@ LAI <- function(base.params, yu = 100, yl = 0)
            Cover = (Width^2/Separation^2)*Weight,
            LAIw = LAIp*Cover)
   LAI <- sum(LAIplant$LAIw)
+  LAI[is.nan(LAI)] <- 0  
   return(LAI)
 }
 
