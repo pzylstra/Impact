@@ -190,7 +190,7 @@ return(wind)
 #'
 #' @param base.params A parameter file
 #' @param slices The number of vertical slices to measure above the measurement point
-#' @param height The height (m) of the lower wind measurement point
+#' @param SL The height (m) of the screen level
 #' @return table
 #' @export
 
@@ -238,6 +238,7 @@ shelter <- function(base.params, slices = 10, SL = 1.2)
 #'
 #' @param base.params Parameter input table
 #' @param reps Number of repetitions
+#' @param slices The number of vertical slices to measure
 #' @param l Variation around input leaf dimensions
 #' @param Ms Standard deviation of LFMC
 #' @param Pm Multiplier of mean LFMC
@@ -278,6 +279,7 @@ windProfile <- function(base.params, Variation, reps = 10, slices = 10, l = 0.1,
 #'
 #' @param base.params Parameter input table
 #' @param reps Number of repetitions
+#' @param slices The number of vertical slices to measure
 #' @param l Variation around input leaf dimensions
 #' @param Ms Standard deviation of LFMC
 #' @param Pm Multiplier of mean LFMC
@@ -301,6 +303,54 @@ windProfileP <- function(base.params, Variation, reps = 1000, slices = 100, l = 
     base.params <- plantVarS(base.params, Strata, Species, Variation, l = l,
                              Ms = Ms, Pm = Pm, Mr = Mr)
     prof <- profileDet(base.params, slices = slices)
+    profW <- rbind(profW, prof)
+    return(profW)
+  }
+  cl <- makeCluster(detectCores())
+  clusterEvalQ(cl,
+               {library(frame)
+                 library(dplyr)
+                 library(extraDistr)
+                 library(impact)})
+  # Setting "envir=environment()" allows clusterExport to access the 3 data frames created at the start of the function
+  clusterExport(cl, c("slices", "l", "Ms", "Pm", "Mr", "base.params", "Variation", "Strata", "Species", "profW"), envir=environment())
+  results <- parLapply(cl, 1:reps, f)
+  stopCluster(cl)
+  return(results)
+}
+
+#####################################################################
+
+#' Calculates a non-deterministic wind profile ovedr a screen height on parallel cores
+#' Useful when running a large number of reps
+#'
+#' @param base.params Parameter input table
+#' @param reps Number of repetitions
+#' @param slices The number of vertical slices to measure above the measurement point
+#' @param SL The height (m) of the screen level
+#' @param l Variation around input leaf dimensions
+#' @param Ms Standard deviation of LFMC
+#' @param Pm Multiplier of mean LFMC
+#' @param Mr Truncates LFMC variability by +/- Pm * LFMC
+#' @param Variation A database of plant variability in traits, with the fields:
+#' record - a unique, consecutively numbered identifier per site
+#' species - the name of the species, which will call trait data from 'default.species.params'
+#' stratum - numeric value from 1 to 4, counting from lowest stratum
+#' Hs - Standard deviation of plant height variations
+#' Hr - Truncates plant height variability by +/- Hr * height
+#' @return dataframe
+#' @export
+
+shelterP <- function(base.params, Variation, reps = 1000, slices = 100, l = 0.1,
+                         Ms = 0.01, Pm = 1, Mr = 1.001)
+{
+  Strata <- impact::strata(base.params)
+  Species <- impact::species(base.params)
+  profW <- data.frame()
+  f <- function(i) {
+    base.params <- plantVarS(base.params, Strata, Species, Variation, l = l,
+                             Ms = Ms, Pm = Pm, Mr = Mr)
+    prof <- shelter(base.params, slices = slices)
     profW <- rbind(profW, prof)
     return(profW)
   }
