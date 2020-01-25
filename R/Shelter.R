@@ -227,8 +227,7 @@ shelter <- function(base.params, slices = 10, SL = 1.2)
   W$Slice <- seq.int(nrow(W))
   wind <- left_join(l,gam)%>%
     left_join(W)%>%
-    mutate(z = 1-((Slice-1)*(1/slices)),
-           hm = z*top)
+    mutate(z = 1-((Slice-1)*(1/slices)))
   return(wind)
 }
 
