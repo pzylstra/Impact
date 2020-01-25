@@ -179,11 +179,60 @@ gam$Slice <- seq.int(nrow(gam))
 W$Slice <- seq.int(nrow(W))
 wind <- left_join(l,gam)%>%
   left_join(W)%>%
-  mutate(z = 1-((Slice-1)*(1/slices)))
+  mutate(z = 1-((Slice-1)*(1/slices)),
+         hm = z*top)
 return(wind)
 }
 
 #####################################################################
+
+#' Finds the deterministic vertical wind profile for a community, above a defined screen level
+#'
+#' @param base.params A parameter file
+#' @param slices The number of vertical slices to measure above the measurement point
+#' @param height The height (m) of the lower wind measurement point
+#' @return table
+#' @export
+
+shelter <- function(base.params, slices = 10, SL = 1.2)
+{
+  
+  # Collect slice details
+  top <- max(species(base.params)$hp)
+  slice <- (top-SL)/slices
+  yu <- top
+  
+  # Loop through slices
+  l <- data.frame("l"=0)
+  gam <- data.frame("gam"=0)
+  W <- data.frame("w"=1)
+  w <- 1
+  n <- 1
+  
+  while(n <= slices) {
+    yl <- yu-slice
+    LAIslice <- LAI(base.params = base.params, yl=yl, yu = yu)
+    g <- 1.785*LAIslice^0.372
+    w <- w*exp(g*((yl/yu)-1))
+    l <- rbind(l,LAIslice)
+    gam <- rbind(gam,g)
+    W <- rbind(W,w)
+    yu <- yl
+    n = n+1
+  }
+  
+  # Construct table
+  l$Slice <- seq.int(nrow(l))
+  gam$Slice <- seq.int(nrow(gam))
+  W$Slice <- seq.int(nrow(W))
+  wind <- left_join(l,gam)%>%
+    left_join(W)%>%
+    mutate(z = 1-((Slice-1)*(1/slices)),
+           hm = z*top)
+  return(wind)
+}
+
+##########################################################################
 
 #' Calculates a non-deterministic wind profile
 #'
