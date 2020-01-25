@@ -19,6 +19,8 @@ Hr - Truncates plant height variability by +/- Hr * height}
 
 \item{reps}{Number of repetitions}
 
+\item{slices}{The number of vertical slices to measure}
+
 \item{l}{Variation around input leaf dimensions}
 
 \item{Ms}{Standard deviation of LFMC}

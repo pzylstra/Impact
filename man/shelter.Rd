@@ -11,7 +11,7 @@ shelter(base.params, slices = 10, SL = 1.2)
 
 \item{slices}{The number of vertical slices to measure above the measurement point}
 
-\item{height}{The height (m) of the lower wind measurement point}
+\item{SL}{The height (m) of the screen level}
 }
 \value{
 table
