@@ -185,7 +185,7 @@ strata <- function(base.params)
            top = top/Co,
            base = base/Co)%>%
     left_join(sep, by = "stratum")%>%
-    mutate(separation = as.numeric(value),
+    mutate(separation = as.numeric(as.character(value)),
            cover = width^2/separation^2)%>%
     select(stratum, separation, cover, width, base, top)
   
