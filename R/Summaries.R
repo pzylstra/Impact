@@ -153,7 +153,7 @@ strata <- function(base.params)
   for(sn in 1:StN){
     strat <- filter(base.params, stratum == sn)
     strat <- na.omit(strat)
-    Sp[sn] <- (as.numeric(max(strat$species))+1)-as.numeric(min(strat$species))
+    Sp[sn] <- (max(as.numeric(strat$species))+1)-min(as.numeric(strat$species))
   }
   
   #COLLECT DIMENSIONS
