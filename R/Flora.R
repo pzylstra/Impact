@@ -59,7 +59,7 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
   ns[is.na(ns)] <- 0
   
   #Heating from surface fire
-  surf <- ns%>%
+  ground <- ns%>%
     mutate(Alpha = 1/(2*lengthSurface^2),
            C = 950*lengthSurface*exp(-Alpha*lengthSurface^2),
            pAlpha = abs(C/(Test-temperature)),
@@ -71,7 +71,7 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
   
   #Heating from plants
   plant<-Plant%>%
-    left_join(surf)%>%
+    left_join(ground)%>%
     mutate(Angle = atan((y1-y0)/(x1-x0)),
            Alpha = 1/(2*flameLength*(flameLength-length)),
            C = 950*flameLength*exp(-Alpha*(flameLength-length)^2),
@@ -82,7 +82,7 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
     select(repId, htP)%>%
     group_by(repId) %>%
     summarize_all(max)%>%
-    right_join(surf)
+    right_join(ground)
   plant[is.na(plant)] <- 0
   
   #Find the corresponding number of each stratum
