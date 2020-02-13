@@ -212,14 +212,25 @@ species <- function(base.params)
   Edge <- base.params[base.params$param == "he", ]
   Base <- base.params[base.params$param == "hc", ]
   Width <- base.params[base.params$param == "w", ]
+  Comp <- base.params[base.params$param == "composition", ]
   
   species <- as.data.frame(list('name'=sp$value, 'hp'=as.numeric(Peak$value),'ht'=as.numeric(Top$value),
                                 'hc'=as.numeric(Base$value), 'he'=as.numeric(Edge$value),
-                                'w'=as.numeric(Width$value), 'lfmc'=as.numeric(lfmc$value))) %>%
+                                'w'=as.numeric(Width$value), 'lfmc'=as.numeric(lfmc$value),
+                                'st'=as.numeric(sp$stratum), 'sp'=as.numeric(sp$species),
+                                'comp'=as.numeric(Comp$value))) %>%
     mutate(htR = ht/hp,
            hcR = hc/hp,
            heR = he/hp,
            wR = w/hp)
-  return(species)
+  cov <- species%>%
+    group_by(st) %>%
+    summarise_if(is.numeric,sum)%>%
+    select(st, comp)%>%
+    left_join(species, by = "st")%>%
+    mutate(comp=comp.y/comp.x)%>%
+    select(st, sp, name, comp, lfmc, hp, ht, hc, he, w, htR, hcR, heR, wR)
+  
+  return(cov)
 }
 
