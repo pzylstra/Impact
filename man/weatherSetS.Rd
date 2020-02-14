@@ -6,9 +6,9 @@
 then models fire from non-deterministic plant parameters
 using plantVarS to modify individual species with their own measured veriability}
 \usage{
-weatherSetS(base.params, weather, Variation, db.path = "out_mc.db",
-  jitters = 10, l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001,
-  updateProgress = NULL)
+weatherSetS(base.params, weather, Variation, Structure,
+  db.path = "out_mc.db", jitters = 10, l = 0.1, Ms = 0.01,
+  Pm = 1, Mr = 1.001, updateProgress = NULL)
 }
 \arguments{
 \item{base.params}{Parameter input table}
@@ -25,6 +25,15 @@ species - the name of the species, which will call trait data from 'default.spec
 stratum - numeric value from 1 to 4, counting from lowest stratum
 Hs - Standard deviation of plant height variations
 Hr - Truncates plant height variability by +/- Hr * height}
+
+\item{Structure}{A dataframe with the fields:
+record - a unique, consecutively numbered identifier per site
+site - a unique identifier per site
+NS, El, Mid & Can - the mean separation between plants (m) per stratum
+ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
+on the left grow directly beneath those in the stratum on the right. Acceptable values
+are t, f, or blank, where the outcome will be decided by the relative stratum heights.
+nsR, eR, mR, cR - maximum species richness recorded for each stratum}
 
 \item{db.path}{Name of the exported database}
 

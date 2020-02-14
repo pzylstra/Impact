@@ -90,11 +90,19 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' stratum - numeric value from 1 to 4, counting from lowest stratum
 #' Hs - Standard deviation of plant height variations
 #' Hr - Truncates plant height variability by +/- Hr * height
+#' @param Structure A dataframe with the fields:
+#' record - a unique, consecutively numbered identifier per site
+#' site - a unique identifier per site
+#' NS, El, Mid & Can - the mean separation between plants (m) per stratum
+#' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
+#' on the left grow directly beneath those in the stratum on the right. Acceptable values
+#' are t, f, or blank, where the outcome will be decided by the relative stratum heights.
+#' nsR, eR, mR, cR - maximum species richness recorded for each stratum
 #' @param updateProgress Progress bar for use in the dashboard
 #' @return dataframe
 #' @export
 
-weatherSetS <- function(base.params, weather, Variation, db.path = "out_mc.db", jitters = 10, l = 0.1,
+weatherSetS <- function(base.params, weather, Variation, Structure, db.path = "out_mc.db", jitters = 10, l = 0.1,
                        Ms = 0.01, Pm = 1, Mr = 1.001, updateProgress = NULL)
 {
   
@@ -113,13 +121,13 @@ weatherSetS <- function(base.params, weather, Variation, db.path = "out_mc.db", 
     d <- max(0.01,min(0.199,weather$DFMC[[i]]))
     
     # Update parameter table
-    tbl <- base.params %>%
+    tbl <- specPoint(base.params, Structure) %>%
       ffm_set_site_param("windSpeed", w, "km/h") %>%
       ffm_set_site_param("temperature", t, "degc") %>%
       ffm_set_site_param("deadFuelMoistureProp", d)
     
-    Strata <- strata(base.params)
-    Species <- species(base.params)
+    Strata <- strata(tbl)
+    Species <- species(tbl)
     
     if (jitters > 0) {
       for (j in 1:jitters) {
@@ -682,4 +690,76 @@ plantVarS <- function (base.params, Strata, Species, Variation, l = 0.1, Ms = 0.
   }
   
   return(tbl)
+}
+
+#####################################################################
+#' Selects random species from the available list, weighted by their frequency
+#' Modifies a parameter table to the shortened list
+#'
+#' @param base.params A parameter file
+#' @param Structure A dataframe with the fields:
+#' record - a unique, consecutively numbered identifier per site
+#' site - a unique identifier per site
+#' NS, El, Mid & Can - the mean separation between plants (m) per stratum
+#' ns_e, ns_m, e_m, e_c, m_c - Logical field indicating whether plants in the stratum
+#' on the left grow directly beneath those in the stratum on the right. Acceptable values
+#' are t, f, or blank, where the outcome will be decided by the relative stratum heights.
+#' nsR, eR, mR, cR - maximum species richness recorded for each stratum
+#' @return dataframe
+#' @export
+
+specPoint <- function(base.params, Structure)
+{
+  
+  Species <- species(base.params)
+  a <- 1
+  
+  # Add temporary fields
+  Species$wComp = 0
+  Species$include = 1
+  
+  # Count strata
+  StN <- as.numeric(max(base.params$stratum[!is.na(base.params$stratum)]))
+  
+  
+  # For each stratum, identify the species being considered, then choose how many of these
+  # will be modelled from a range set by the recorded maximum point richness of each stratum
+  
+  richList <- c(as.numeric(Structure[Structure$record == a, ]$nsR), as.numeric(Structure[Structure$record == a, ]$eR),
+                as.numeric(Structure[Structure$record == a, ]$mR), as.numeric(Structure[Structure$record == a, ]$cR))
+  richList <- richList[!is.na(richList)]
+  
+  for (StratNo in 1:StN) {
+    
+    SpL <- as.numeric(min(Species[Species$st == StratNo, ]$sp))
+    SpU <- as.numeric(max(Species[Species$st == StratNo, ]$sp))
+    SpN <- SpU-SpL+1
+    
+    # Species richness for point in the stratum
+    R <- richList[StratNo]
+    choose <- round(runif(n=1)*(min(R,SpN)-1),0)+1
+    
+    # Limit stratum species list to a random selection weighted by species occurrence
+    for (a in SpL:SpU) {
+      Species$wComp[a] = runif(n=1)*Species$comp[a]
+    }
+    # Identify unneeded records
+    low <- Rfast::nth(Species[Species$st == StratNo, ]$wComp, choose, descending = TRUE)
+    
+    for (sp in SpL:SpU) {
+      Species$include[sp] = if (Species$wComp[sp] < low) { 0 }
+      else {  1 }
+    }
+  }
+  Species <- Species%>%
+    mutate(species = as.character(sp))
+  Species[,"new"] <- cumsum(Species$include)
+  
+  param <- left_join(base.params, Species, by="species")%>%
+    subset(include != 0 | is.na(include))%>%
+    mutate(species = new)%>%
+    select(stratum, species, param, value, units)
+  rownames(param) <- seq(length=nrow(param))
+  
+  return(param)
 }
