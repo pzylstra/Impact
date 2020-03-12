@@ -763,3 +763,76 @@ specPoint <- function(base.params, Structure)
   
   return(param)
 }
+
+
+#####################################################################
+#' Models fire behaviour in each species of a parameter table,
+#' summarising the combustibility from the length of flame divided
+#' by the length of segment ignited
+#'
+#' @param base.params A parameter file
+#' @return dataframe
+#' @export
+
+spComb <- function(base.params)
+{
+  specflam <- function (base.params, st, sp) 
+  {
+    SP <- base.params %>% filter(stratum == st & species == sp) %>%
+      add_row(stratum = st, param = "levelName", value = "canopy") %>%
+      add_row(stratum = st, param = "plantSeparation", value = 100)
+    end <- base.params %>% filter(is.na(stratum))
+    tab <- rbind(SP, end)
+    
+    # Adjust plant heights to a 0.5m base
+    base <- min(as.numeric((tab[which(tab$param == "hc"), ])$value[1]),
+                as.numeric((tab[which(tab$param == "he"), ])$value[1]))
+    dif <- 0.5-base
+    hc <- as.numeric((tab[which(tab$param == "hc"), ])$value[1])+dif
+    he <- as.numeric((tab[which(tab$param == "he"), ])$value[1])+dif
+    ht <- as.numeric((tab[which(tab$param == "ht"), ])$value[1])+dif
+    hp <- as.numeric((tab[which(tab$param == "hp"), ])$value[1])+dif
+    tab <- tab %>% 
+      ffm_set_species_param(stratum.id = st, species.id = sp, "hc", hc) %>% 
+      ffm_set_species_param(stratum.id = st, species.id = sp, "he", he) %>% 
+      ffm_set_species_param(stratum.id = st, species.id = sp, "ht", ht) %>% 
+      ffm_set_species_param(stratum.id = st, species.id = sp, "hp", hp) %>%
+      ffm_set_site_param("windSpeed", 2) %>%
+      ffm_set_site_param("temperature", 30) %>%
+      ffm_set_site_param("deadFuelMoistureProp", 0.05) %>%
+      ffm_set_site_param("slope", 0)
+    
+    # Run for surface fuel loads from 4 to 20 t/ha
+    for (i in 4:20) {
+      db.recreate <- i == 4
+      tab <- ffm_set_site_param(tab, "fuelLoad", i)
+      ffm_run(params = tab, db.path = "out_mc.db", db.recreate = db.recreate)
+    }
+    
+    res<-ffm_db_load("out_mc.db")
+    IP <- repFlame(res$IgnitionPaths) %>%
+      mutate(rat = flameLength/length)
+    
+    name <- (tab[which(tab$param == "name"), ])$value[1]
+    flam <- round(mean(IP$rat),2)
+    out <- as.data.frame(list('Stratum' = st, 'Species' = sp, 
+                              'name' = name,  'Flammability'=flam))
+    return(out)
+  }
+  
+  #Create list of species & strata
+  can <- base.params %>%
+    filter(!is.na(stratum)) %>%
+    select(stratum, species)
+  candidates <- distinct(can) %>%
+    filter(!is.na(species))
+  
+  n <- as.numeric(nrow(candidates))
+  combustibility <- specflam(base.params, candidates$stratum[1], candidates$species[1])
+  
+  for (j in 2:n){
+    summ <- specflam(base.params, candidates$stratum[j], candidates$species[j])
+    combustibility <- rbind(combustibility, summ)
+  }
+  return(combustibility)
+}
