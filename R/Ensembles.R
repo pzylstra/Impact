@@ -816,7 +816,7 @@ spComb <- function(base.params)
     name <- (tab[which(tab$param == "name"), ])$value[1]
     flam <- round(mean(IP$rat),2)
     out <- as.data.frame(list('Stratum' = st, 'Species' = sp, 
-                              'name' = name,  'Flammability'=flam))
+                              'name' = name,  'Combustibility'=flam))
     return(out)
   }
   
