@@ -2,6 +2,7 @@
 
 export(LAI)
 export(LAIp)
+export(WRF)
 export(ageCommunity)
 export(applyGrowth)
 export(arboreal)

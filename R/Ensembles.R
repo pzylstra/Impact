@@ -129,6 +129,7 @@ weatherSetS <- function(base.params, weather, Variation, Structure, db.path = "o
     Strata <- strata(tbl)
     Species <- species(tbl)
     
+    if (d < 0.199) {
     if (jitters > 0) {
       for (j in 1:jitters) {
         tbl <- plantVarS(tbl, Strata, Species, Variation, l = l,
@@ -136,6 +137,7 @@ weatherSetS <- function(base.params, weather, Variation, Structure, db.path = "o
         # Run the model
         ffm_run(tbl, db.path, db.recreate = db.recreate)
       }
+    }
     }
     Sys.sleep(0.25)
     ####UpdateProgress

@@ -367,3 +367,22 @@ shelterP <- function(base.params, Variation, reps = 1000, slices = 100, l = 0.1,
 }
 
 #####################################################################
+
+#' Calculates the wind reduction factor from a single parameter file,
+#' defaults to screen height of 1.2m
+#'
+#' @param base.params Parameter input table
+#' @param test The lower height in m above ground
+#' @return numeric
+#' @export
+
+WRF <- function(base.params, test = 1.2)
+{
+  s <- strata(base.params)
+  t <- max(s$top)
+  slice <- round(t/test)
+  det <- profileDet(base.params, slices = slice)
+  w <- det[nrow(det)-1,]
+  wrf <- as.numeric(round(1/w$w[1], 1))
+  return(wrf)
+}
