@@ -6,7 +6,7 @@
 then models fire from non-deterministic plant parameters
 using plantVarS to modify individual species with their own measured veriability}
 \usage{
-weatherSetS(base.params, weather, Variation, Structure,
+weatherSetS(base.params, weather, Variation, Structure, a,
   db.path = "out_mc.db", jitters = 10, l = 0.1, Ms = 0.01,
   Pm = 1, Mr = 1.001, updateProgress = NULL)
 }

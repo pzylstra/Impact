@@ -5,7 +5,7 @@
 \title{Selects random species from the available list, weighted by their frequency
 Modifies a parameter table to the shortened list}
 \usage{
-specPoint(base.params, Structure)
+specPoint(base.params, Structure, a)
 }
 \arguments{
 \item{base.params}{A parameter file}

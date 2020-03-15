@@ -102,7 +102,7 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' @return dataframe
 #' @export
 
-weatherSetS <- function(base.params, weather, Variation, Structure, db.path = "out_mc.db", jitters = 10, l = 0.1,
+weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path = "out_mc.db", jitters = 10, l = 0.1,
                        Ms = 0.01, Pm = 1, Mr = 1.001, updateProgress = NULL)
 {
   
@@ -121,7 +121,7 @@ weatherSetS <- function(base.params, weather, Variation, Structure, db.path = "o
     d <- max(0.01,min(0.199,weather$DFMC[[i]]))
     
     # Update parameter table
-    tbl <- specPoint(base.params, Structure) %>%
+    tbl <- specPoint(base.params, Structure, a) %>%
       ffm_set_site_param("windSpeed", w, "km/h") %>%
       ffm_set_site_param("temperature", t, "degc") %>%
       ffm_set_site_param("deadFuelMoistureProp", d)
@@ -710,11 +710,10 @@ plantVarS <- function (base.params, Strata, Species, Variation, l = 0.1, Ms = 0.
 #' @return dataframe
 #' @export
 
-specPoint <- function(base.params, Structure)
+specPoint <- function(base.params, Structure, a)
 {
   
   Species <- species(base.params)
-  a <- 1
   
   # Add temporary fields
   Species$wComp = 0
