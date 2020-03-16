@@ -139,8 +139,8 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
         ffm_run(tbl, db.path, db.recreate = db.recreate)
       }
     }
+      p <- p+1
     }
-    p <- p+1
     
     Sys.sleep(0.25)
     ####UpdateProgress
