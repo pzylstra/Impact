@@ -5,8 +5,8 @@
 \title{Randomly modifies plant traits within defined ranges for non-deterministic predictions
 Differs from plantVar by modifying individual species by their own rules}
 \usage{
-plantVarS(base.params, Strata, Species, Variation, l = 0.1, Ms = 0.01,
-  Pm = 1, Mr = 1.001)
+plantVarS(base.params, Strata, Species, Variation, a, l = 0.1,
+  Ms = 0.01, Pm = 1, Mr = 1.001)
 }
 \arguments{
 \item{base.params}{Parameter input table}
