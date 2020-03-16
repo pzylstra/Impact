@@ -109,10 +109,11 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
   # Run the model, updating the base parameter table
   # with MC values at each iteration
   
+  p <- 1
   pbar <- txtProgressBar(max = max(weather$tm), style = 3)
   for (i in 1:max(weather$tm)) {
     ## Create database and delete the last part
-    db.recreate <- i == 1
+    db.recreate <- p == 1
     
     # Read weather values from the table
     
@@ -132,13 +133,15 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
     if (d < 0.199) {
     if (jitters > 0) {
       for (j in 1:jitters) {
-        tbl <- plantVarS(tbl, Strata, Species, Variation, l = l,
+        tbl <- plantVarS(tbl, Strata, Species, Variation, a, l = l,
                         Ms = Ms, Pm = Pm, Mr = Mr)
         # Run the model
         ffm_run(tbl, db.path, db.recreate = db.recreate)
       }
     }
     }
+    p <- p+1
+    
     Sys.sleep(0.25)
     ####UpdateProgress
     if (is.function(updateProgress)) {
@@ -637,7 +640,7 @@ plantVar <- function (base.params, Strata, Species,
 #' @return dataframe
 #' @export
 
-plantVarS <- function (base.params, Strata, Species, Variation, l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001)
+plantVarS <- function (base.params, Strata, Species, Variation, a, l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001)
 {
   
   tbl <- base.params
@@ -646,6 +649,8 @@ plantVarS <- function (base.params, Strata, Species, Variation, l = 0.1, Ms = 0.
   SpeciesN <- 1
   SpeciesP <- 1
   
+  #Filter variation table to record
+  varRec <- Variation[Variation$record ==a, ]
   
   # Loop through plant strata
   
@@ -677,9 +682,9 @@ plantVarS <- function (base.params, Strata, Species, Variation, l = 0.1, Ms = 0.
     # Modify plant dimansions for each species within the stratum
     
     for (p in 1:Strata$speciesN[si]) {
-      Hr <- Variation$Hr[SpeciesP]
+      Hr <- varRec$Hr[SpeciesP]
       peak <- rtnorm(n = 1, mean = Species$hp[SpeciesP],
-                     sd = Variation$Hs[SpeciesP], a = Species$hp[SpeciesP]/Hr, b = Species$hp[SpeciesP] *
+                     sd = varRec$Hs[SpeciesP], a = Species$hp[SpeciesP]/Hr, b = Species$hp[SpeciesP] *
                        Hr)
       tbl <- tbl %>%
         ffm_set_species_param(si, SpeciesP, "hp", peak) %>%
