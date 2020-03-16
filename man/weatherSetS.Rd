@@ -4,7 +4,7 @@
 \alias{weatherSetS}
 \title{Updates parameter files with weather from a dataset,
 then models fire from non-deterministic plant parameters
-using plantVarS to modify individual species with their own measured veriability}
+using plantVarS to modify individual species with their own measured variability}
 \usage{
 weatherSetS(base.params, weather, Variation, Structure, a,
   db.path = "out_mc.db", jitters = 10, l = 0.1, Ms = 0.01,
@@ -55,5 +55,5 @@ dataframe
 \description{
 Updates parameter files with weather from a dataset,
 then models fire from non-deterministic plant parameters
-using plantVarS to modify individual species with their own measured veriability
+using plantVarS to modify individual species with their own measured variability
 }
