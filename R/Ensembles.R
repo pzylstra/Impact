@@ -70,7 +70,7 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 
 #' Updates parameter files with weather from a dataset,
 #' then models fire from non-deterministic plant parameters
-#' using plantVarS to modify individual species with their own measured veriability
+#' using plantVarS to modify individual species with their own measured variability
 #'
 #' @param base.params Parameter input table
 #' @param weather A dataframe with the four fields:
@@ -103,25 +103,17 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
 #' @export
 
 weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path = "out_mc.db", jitters = 10, l = 0.1,
-                       Ms = 0.01, Pm = 1, Mr = 1.001, updateProgress = NULL)
+                        Ms = 0.01, Pm = 1, Mr = 1.001, updateProgress = NULL)
 {
-  
-  # Run the model, updating the base parameter table
-  # with MC values at each iteration
-  
-#  p <- 1
   pbar <- txtProgressBar(max = max(weather$tm), style = 3)
+  
+  # Read weather values from the table
   for (i in 1:max(weather$tm)) {
-    ## Create database and delete the last part
-    db.recreate <- i == 1
-    
-    # Read weather values from the table
-    
     w <- weather$W[[i]]
     t <- weather$T[[i]]
     d <- max(0.01,min(0.199,weather$DFMC[[i]]))
     
-    # Update parameter table
+    # Select species for a random point in the forest and import the weather parameters
     tbl <- specPoint(base.params, Structure, a) %>%
       ffm_set_site_param("windSpeed", w, "km/h") %>%
       ffm_set_site_param("temperature", t, "degc") %>%
@@ -130,17 +122,18 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
     Strata <- strata(tbl)
     Species <- species(tbl)
     
-#    if (d < 0.199) {
     if (jitters > 0) {
       for (j in 1:jitters) {
+        # Recreate database on first run, then add following runs to this
+        db.recreate <- (i * j) == 1
+        
+        # Vary plant traits for each species within their range
         tbl <- plantVarS(tbl, Strata, Species, Variation, a, l = l,
-                        Ms = Ms, Pm = Pm, Mr = Mr)
+                         Ms = Ms, Pm = Pm, Mr = Mr)
         # Run the model
         ffm_run(tbl, db.path, db.recreate = db.recreate)
       }
     }
-#      p <- p+1
-#   }
     
     Sys.sleep(0.25)
     ####UpdateProgress
@@ -151,9 +144,9 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
     setTxtProgressBar(pbar, i)
   }
   
-  
   cat("Finished.  Output written to", db.path)
 }
+
 #######################################################################
 
 #' Models flammability dynamics from a weather set
