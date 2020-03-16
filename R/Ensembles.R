@@ -109,11 +109,11 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
   # Run the model, updating the base parameter table
   # with MC values at each iteration
   
-  p <- 1
+#  p <- 1
   pbar <- txtProgressBar(max = max(weather$tm), style = 3)
   for (i in 1:max(weather$tm)) {
     ## Create database and delete the last part
-    db.recreate <- p == 1
+    db.recreate <- i == 1
     
     # Read weather values from the table
     
@@ -130,7 +130,7 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
     Strata <- strata(tbl)
     Species <- species(tbl)
     
-    if (d < 0.199) {
+#    if (d < 0.199) {
     if (jitters > 0) {
       for (j in 1:jitters) {
         tbl <- plantVarS(tbl, Strata, Species, Variation, a, l = l,
@@ -139,8 +139,8 @@ weatherSetS <- function(base.params, weather, Variation, Structure, a, db.path =
         ffm_run(tbl, db.path, db.recreate = db.recreate)
       }
     }
-      p <- p+1
-    }
+#      p <- p+1
+#   }
     
     Sys.sleep(0.25)
     ####UpdateProgress
