@@ -67,8 +67,8 @@ stratum <- function(flames, sites, ros, Surf)
   st <- as.numeric(count(a))/rep
   i <- 1
   for(loop in 1:rep) {
-    a$flameHeight[i]=Surf$heightSurface[loop]
-    a$flameLength[i]=Surf$lengthSurface[loop]
+    a$flameHeight[i]=Surf$heightSurface[loop]*a$extinct[i]
+    a$flameLength[i]=Surf$lengthSurface[loop]*a$extinct[i]
     a$flameAngle[i]=Surf$angleSurface[loop]
     i <- i + st
   }
