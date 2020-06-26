@@ -22,14 +22,16 @@
 weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10, l = 0.1,
                        Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41,updateProgress = NULL)
 {
+  # Collect initial veg descriptors
+  
+  Strata <- strata(base.params)
+  Species <- species(base.params)
   
   # Run the model, updating the base parameter table
   # with MC values at each iteration
   
   pbar <- txtProgressBar(max = max(weather$tm), style = 3)
   for (i in 1:max(weather$tm)) {
-    ## Create database and delete the last part
-    db.recreate <- i == 1
     
     # Read weather values from the table
     
@@ -43,11 +45,11 @@ weatherSet <- function(base.params, weather, db.path = "out_mc.db", jitters = 10
       ffm_set_site_param("temperature", t, "degc") %>%
       ffm_set_site_param("deadFuelMoistureProp", d)
     
-    Strata <- strata(base.params)
-    Species <- species(base.params)
-    
     if (jitters > 0) {
       for (j in 1:jitters) {
+        ## Create database and delete the last part
+        db.recreate <- (i * j) == 1
+        
         tbl <- plantVar(tbl, Strata, Species, l = l,
                         Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hr)
         # Run the model
