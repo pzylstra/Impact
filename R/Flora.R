@@ -65,9 +65,13 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
            pAlpha = abs(C/(Test-temperature)),
            R = pAlpha*cos(angleSurface),
            El = R * tan((slope_degrees * pi)/180),
-           ht = sin(angleSurface)*pAlpha - El
+           ht = (sin(angleSurface)*pAlpha - El) * extinct,
+           ns = ns * extinct,
+           e = e * extinct,
+           m = m * extinct,
+           c = c * extinct
     )%>%
-    select(repId, temperature, slope_degrees, wind_kph, ht, ns, e, m, c)
+    select(repId, extinct, temperature, slope_degrees, wind_kph, ht, ns, e, m, c)
   
   #Heating from plants
   plant<-Plant%>%
@@ -78,7 +82,7 @@ flora <- function(Surf, Plant, Param = Param, Test = 70)
            pAlpha = abs(C/(Test-temperature)),
            Reach = pAlpha*cos(Angle),
            El = Reach * tan((slope_degrees * pi)/180),
-           htP = sin(Angle)*pAlpha + y0 - El)%>%
+           htP = (sin(Angle)*pAlpha + y0 - El) * extinct)%>%
     select(repId, htP)%>%
     group_by(repId) %>%
     summarize_all(max)%>%
