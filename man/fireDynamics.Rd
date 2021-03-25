@@ -4,11 +4,31 @@
 \alias{fireDynamics}
 \title{Models flammability dynamics from a weather set}
 \usage{
-fireDynamics(base.params, weather, growth, cover, Flora, jitters = 5,
-  ageStep = 5, firstAge = 1, steps = 10, tAge = 50, l = 0.1,
-  default.species.params = default.species.params, Ms = 0.01, Pm = 1,
-  Mr = 1.001, Hs = 0.2, Hr = 1.41, a, suspNS = "suspNS",
-  density = 300, test = 80, hKill = 90, updateProgress = NULL)
+fireDynamics(
+  base.params,
+  weather,
+  growth,
+  cover,
+  Flora,
+  jitters = 5,
+  ageStep = 5,
+  firstAge = 1,
+  steps = 10,
+  tAge = 50,
+  l = 0.1,
+  default.species.params = default.species.params,
+  Ms = 0.01,
+  Pm = 1,
+  Mr = 1.001,
+  Hs = 0.2,
+  Hr = 1.41,
+  a,
+  suspNS = "suspNS",
+  density = 300,
+  test = 80,
+  hKill = 90,
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{base.params}{Parameter input table}

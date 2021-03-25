@@ -4,11 +4,27 @@
 \alias{underground}
 \title{Fire risk for an animal sheltering underground}
 \usage{
-underground(Surf, Plant, diameter = 6, surface = 677,
-  percentile = 0.5, RH = 0.2, moisture = 0.2, distance = 50,
-  trail = 300, var = 10, Pressure = 1013.25, Altitude = 0,
-  texture = "clay", peat = 0.1, grain = "fine", unfrozen = 1,
-  depth = 0.1, soilTemp = 25, updateProgress = NULL)
+underground(
+  Surf,
+  Plant,
+  diameter = 6,
+  surface = 677,
+  percentile = 0.5,
+  RH = 0.2,
+  moisture = 0.2,
+  distance = 50,
+  trail = 300,
+  var = 10,
+  Pressure = 1013.25,
+  Altitude = 0,
+  texture = "clay",
+  peat = 0.1,
+  grain = "fine",
+  unfrozen = 1,
+  depth = 0.1,
+  soilTemp = 25,
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{Surf}{The dataframe 'runs' exported from Monte Carlos as 'Summary.csv'}

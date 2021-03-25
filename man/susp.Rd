@@ -4,8 +4,16 @@
 \alias{susp}
 \title{Models the packing of materials in a suspended layer}
 \usage{
-susp(base.params, a, suspNS = "suspNS", Flora, growth,
-  default.species.params, age, density = 300)
+susp(
+  base.params,
+  a,
+  suspNS = "suspNS",
+  Flora,
+  growth,
+  default.species.params,
+  age,
+  density = 300
+)
 }
 \arguments{
 \item{base.params}{Parameter input table}

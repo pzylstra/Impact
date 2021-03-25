@@ -4,12 +4,30 @@
 \alias{arboreal}
 \title{Fire risk for an exposed arboreal animal}
 \usage{
-arboreal(Surf, Plant, percentile = 0.5, Height = 1, low = 1,
-  high = 50, var = 10, Pressure = 1013.25, Altitude = 0,
-  RH = 0.51, Class = "mammalia", Dimension = 0.1, Area = 0.2,
-  protection = 0.02, count = 66, fibre = 0.01, Specific_heat = 2.5,
-  skinCp = 3.5, skinK = 2, objectTemp = 38, Shape = "Flat",
-  updateProgress = NULL)
+arboreal(
+  Surf,
+  Plant,
+  percentile = 0.5,
+  Height = 1,
+  low = 1,
+  high = 50,
+  var = 10,
+  Pressure = 1013.25,
+  Altitude = 0,
+  RH = 0.51,
+  Class = "mammalia",
+  Dimension = 0.1,
+  Area = 0.2,
+  protection = 0.02,
+  count = 66,
+  fibre = 0.01,
+  Specific_heat = 2.5,
+  skinCp = 3.5,
+  skinK = 2,
+  objectTemp = 38,
+  Shape = "Flat",
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{Surf}{The dataframe 'runs' exported from Monte Carlos as 'Summary.csv'}

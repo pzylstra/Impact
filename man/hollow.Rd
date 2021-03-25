@@ -4,11 +4,28 @@
 \alias{hollow}
 \title{Fire risk for an animal sheltering in a wooden hollow}
 \usage{
-hollow(Surf, Plant, percentile = 0.5, Height = 1, woodDensity = 700,
-  barkDensity = 500, wood = 0.1, bark = 0.02, RH = 0.2,
-  water = 0.2, low = 1, high = 50, var = 10, Pressure = 1013.25,
-  Altitude = 0, Dimension = 0.3, Area = 0.03, hollowTemp = 25,
-  Shape = "Flat", updateProgress = NULL)
+hollow(
+  Surf,
+  Plant,
+  percentile = 0.5,
+  Height = 1,
+  woodDensity = 700,
+  barkDensity = 500,
+  wood = 0.1,
+  bark = 0.02,
+  RH = 0.2,
+  water = 0.2,
+  low = 1,
+  high = 50,
+  var = 10,
+  Pressure = 1013.25,
+  Altitude = 0,
+  Dimension = 0.3,
+  Area = 0.03,
+  hollowTemp = 25,
+  Shape = "Flat",
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{Surf}{The dataframe 'runs' exported from Monte Carlos as 'Summary.csv'}

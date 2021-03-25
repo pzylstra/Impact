@@ -4,8 +4,16 @@
 \alias{windProfile}
 \title{Calculates a non-deterministic wind profile}
 \usage{
-windProfile(base.params, Variation, reps = 10, slices = 10, l = 0.1,
-  Ms = 0.01, Pm = 1, Mr = 1.001)
+windProfile(
+  base.params,
+  Variation,
+  reps = 10,
+  slices = 10,
+  l = 0.1,
+  Ms = 0.01,
+  Pm = 1,
+  Mr = 1.001
+)
 }
 \arguments{
 \item{base.params}{Parameter input table}

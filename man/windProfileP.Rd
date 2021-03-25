@@ -5,8 +5,16 @@
 \title{Calculates a non-deterministic wind profile on parallel cores
 Useful when running a large number of reps}
 \usage{
-windProfileP(base.params, Variation, reps = 1000, slices = 100,
-  l = 0.1, Ms = 0.01, Pm = 1, Mr = 1.001)
+windProfileP(
+  base.params,
+  Variation,
+  reps = 1000,
+  slices = 100,
+  l = 0.1,
+  Ms = 0.01,
+  Pm = 1,
+  Mr = 1.001
+)
 }
 \arguments{
 \item{base.params}{Parameter input table}
