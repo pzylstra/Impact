@@ -27,6 +27,7 @@ fireDynamics(
   density = 300,
   test = 80,
   hKill = 90,
+  db.path = "out_mc.db",
   updateProgress = NULL
 )
 }

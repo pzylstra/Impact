@@ -53,7 +53,7 @@
 
 fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5, ageStep = 5, firstAge = 1, steps = 10, tAge = 50, l = 0.1,
                          default.species.params = default.species.params, Ms = 0.01, Pm = 1, Mr = 1.001, Hs = 0.2, Hr = 1.41, a, suspNS = "suspNS",
-                         density = 300, test = 80, hKill = 90,updateProgress = NULL)
+                         density = 300, test = 80, hKill = 90, db.path = "out_mc.db", updateProgress = NULL)
 {
   age <- firstAge
   
@@ -99,7 +99,7 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
   
   # RUN THE MODEL
   weatherSet(base.params, weather, jitters = jitters, l = l,
-             Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hr)
+             Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hrv, db.path = db.path)
   res<-ffm_db_load("out_mc.db")
   
   # SUMMARISE RESULTS
