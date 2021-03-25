@@ -209,8 +209,8 @@ fireDynamics <- function(base.params, weather, growth, cover, Flora, jitters = 5
     
     # RUN THE MODEL
     weatherSet(base.params, weather, jitters = jitters, l = l,
-               Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hr)
-    res<-ffm_db_load("out_mc.db")
+               Ms = Ms, Pm = Pm, Mr = Mr, Hs = Hs, Hr = Hr, db.path = db.path)
+    res<-ffm_db_load(db.path)
     
     # SUMMARISE RESULTS
     #Build tables
